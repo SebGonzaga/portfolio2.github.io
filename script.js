@@ -127,7 +127,6 @@ if (fine && !reduce) {
 
 /* projects */
 const P = [
-  ['AI SYSTEM', 'R.A.I.N', 'Risk Awareness & Intelligent Network', 'AI-assisted disaster preparedness: hazard monitoring, verified alerts and calm guidance in English and Filipino.', ['AI', 'Maps', 'Weather', 'Supabase'], './rain/index.html', 'rain', 8, 'RAIN'],
   ['BRAND SITE', 'Auré', 'Confidence in every detail', 'A luxury jewellery boutique with a collection showcase and an AI concierge stylist.', ['HTML', 'CSS', 'JavaScript', 'OpenAI'], 'https://sebgonzaga.github.io/aure/', 'aure', 42, 'Auré'],
   ['BRAND SITE', 'Lihim Café', 'A hidden garden café', 'A quiet, editorial restaurant site: photo menu, weekend breakfast, location and an assistant.', ['HTML', 'CSS', 'JavaScript', 'Gemini'], 'https://lihimcafe.vercel.app/', 'lihim', 24, 'lihim'],
   ['BRAND SITE', 'KRĀV Cafe Tanauan', 'Satisfy your krāvings', 'A lively cafe site with menu photos, an interior and drive-thru gallery and delivery links.', ['HTML', 'CSS', 'JavaScript', 'Gemini'], './krav-cafe/index.html', 'krav', 28, 'KRĀV'],
@@ -142,8 +141,8 @@ const P = [
   ['COURSEWORK', 'OOP Applications', '', 'Java, C# and C++ projects built around inheritance, encapsulation and polymorphism.', ['Java', 'C#', 'C++'], '', 'concept', 215, 'class'],
 ];
 const GROUPS = [
-  ['all', 'All', null],
-  ['ai', 'AI & Systems', ['R.A.I.N', 'NEXUS AI', 'Inkwell Study Notebook']],
+  ['all', 'All', ['Auré', 'Lihim Café', 'KRĀV Cafe Tanauan', 'Inkwell Study Notebook', 'Pick & Race', 'NEXUS AI', 'Minecraft Block Explorer', 'Pokédex Live Terminal', 'SolarCircuit']],
+  ['ai', 'AI & Systems', ['NEXUS AI', 'Inkwell Study Notebook']],
   ['brand', 'Brand Sites', ['Auré', 'Lihim Café', 'KRĀV Cafe Tanauan']],
   ['tools', 'Tools & Explorers', ['Pick & Race', 'Minecraft Block Explorer', 'Pokédex Live Terminal', 'SolarCircuit']],
   ['school', 'Coursework', ['Inventory Management System', 'Step Tracking Web App', 'OOP Applications']],
@@ -327,19 +326,55 @@ revealIn($$('#labGrid .lab-card'));
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
 addEventListener('load', () => ScrollTrigger.refresh());
 
-/* certificates: filter + lightbox */
+/* certificates: filter */
 (() => {
-  const rows = [...document.querySelectorAll('.cert-row')], lb = document.getElementById('lb');
-  if (!lb) return;
+  const rows = [...document.querySelectorAll('.cert-row')];
   document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
     document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c));
     rows.forEach(r => r.hidden = c.dataset.f !== 'All' && r.dataset.type !== c.dataset.f);
     if (window.ScrollTrigger) ScrollTrigger.refresh();
   }));
-  const close = () => { lb.hidden = true; };
-  document.querySelectorAll('.cert-view,.moment').forEach(b0 => b0.addEventListener('click', e => {
-    const b = e.currentTarget; lb.querySelector('img').src = b.dataset.img; lb.querySelector('img').alt = b.dataset.cap; lb.querySelector('p').textContent = b.dataset.cap; lb.hidden = false;
-  }));
-  lb.addEventListener('click', close);
-  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
+
+/* RAIN showcase: the disaster pages, one by one */
+(() => {
+  const root = $('#rainShow'); if (!root) return;
+  const PAGES = [
+    ['Weather', 'weather', 'Current conditions and the forecast for Tanauan City, with live data when the server is connected and sample readings when it is not.', ['Forecast', 'Live data']],
+    ['Heat Index', 'heat-index', 'How hot it actually feels in Tanauan City, with the heat index and its risk level so residents know when to take precautions.', ['Heat risk', 'Advisories']],
+    ['Air Quality', 'air-quality', 'Air quality for the Tanauan area, shown as an index with clear health guidance.', ['AQI', 'Health tips']],
+    ['Typhoon & Satellite', 'typhoon-map', 'A map for following typhoons together with satellite imagery of the weather over the Philippines.', ['Typhoon track', 'Satellite']],
+    ['Flood & Landslide', 'flood-landslide', 'A hazard map of Tanauan City showing flood and landslide risk by area, with a 3D terrain view as a companion page.', ['Hazard map', '3D view']],
+    ['Volcano', 'volcano', 'Taal Volcano status and activity at a glance, so the risk to nearby communities is easy to read.', ['Taal', 'Status']],
+    ['Earthquake', 'earthquake', 'An earthquake monitor listing recent quakes and where they struck.', ['Recent quakes', 'Map']],
+  ];
+  const list = $('#rainList'), frame = $('#rainIframe'), view = $('#rainView');
+  const pad = n => String(n).padStart(2, '0');
+  let cur = -1, seen = false;
+  list.innerHTML = PAGES.map((p, i) => `<button type="button" role="tab" data-i="${i}" aria-selected="false"><b>${pad(i + 1)}</b><span>${p[0]}</span></button>`).join('');
+  function show(i) {
+    i = (i + PAGES.length) % PAGES.length; if (i === cur) return; cur = i;
+    const [name, file, desc, tags] = PAGES[i], url = `./rain/${file}.html`;
+    $$('button', list).forEach((b, k) => { const on = k === i; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    $('#rainName').textContent = name; $('#rainDesc').textContent = desc;
+    $('#rainCount').textContent = `${pad(i + 1)} / ${pad(PAGES.length)}`;
+    $('#rainTags').innerHTML = tags.map(t => `<li>${t}</li>`).join('');
+    $('#rainUrl').textContent = `rain/${file}.html`; $('#rainOpen').href = url;
+    view.classList.add('loading'); if (seen) frame.src = url;
+  }
+  frame.addEventListener('load', () => view.classList.remove('loading'));
+  list.addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); });
+  list.addEventListener('keydown', e => {
+    const k = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key]; if (!k) return;
+    e.preventDefault(); show(cur + k); $$('button', list)[cur].focus();
+  });
+  $('#rainPrev').addEventListener('click', () => show(cur - 1));
+  $('#rainNext').addEventListener('click', () => show(cur + 1));
+  show(0);
+  /* the floating "currently building" badge points here, so tuck it away while this section is on screen */
+  const nb = $('#nowBuilding'), sec = $('#rain');
+  if (nb && sec && 'IntersectionObserver' in window) new IntersectionObserver(([en]) => nb.classList.toggle('away', en.isIntersecting), { threshold: 0.05 }).observe(sec);
+  /* only load the live page once the section is near the screen */
+  const load = () => { if (seen) return; seen = true; frame.src = `./rain/${PAGES[cur][1]}.html`; };
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { load(); io.disconnect(); } }, { rootMargin: '300px' }); io.observe(root); } else load();
 })();

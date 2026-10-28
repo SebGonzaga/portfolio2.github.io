@@ -26,7 +26,7 @@
 <div id="scroll-progress"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="cursor" id="cursor" aria-hidden="true"><span id="cursorLabel"></span></div>
-<a class="now-building" href="#projects"><i></i><span><small>CURRENTLY BUILDING</small>R.A.I.N · Disaster Management System</span></a>
+<a class="now-building" id="nowBuilding" href="#rain"><i></i><span><small>CURRENTLY BUILDING</small>R.A.I.N · Disaster Management System</span></a>
 <div class="modal" id="labModal" role="dialog" aria-modal="true" aria-labelledby="labTitle" hidden>
   <div class="modal-card">
     <div class="modal-bar"><span id="labCode">LAB / 001</span><button type="button" id="labClose" aria-label="Close experiment">Close ✕</button></div>
@@ -45,6 +45,7 @@
       <a href="#about">About</a>
       <a href="#skills">Skills</a>
       <a href="#projects">Projects</a>
+      <a href="#rain">RAIN</a>
       <a href="#lab">Lab</a>
       <a href="#experience">Experience</a>
       <a href="#certificates">Certificates</a>
@@ -63,6 +64,7 @@
   <a href="#about">About</a>
   <a href="#skills">Skills</a>
   <a href="#projects">Projects</a>
+      <a href="#rain">RAIN</a>
       <a href="#lab">Lab</a>
   <a href="#experience">Experience</a>
   <a href="#certificates">Certificates</a>
@@ -163,17 +165,48 @@
     <div class="section-head reveal">
       <p class="eyebrow">03 / Projects</p>
       <h2 class="section-title">Artifacts from the lab.</h2>
-      <p class="section-sub">Thirteen things I've built, sorted by type. Pick a category.</p>
+      <p class="section-sub">Twelve things I've built, sorted by type. Pick a category.</p>
     </div>
     <div class="proj-tabs reveal" id="projTabs" role="tablist" aria-label="Project categories"></div>
     <div class="proj-grid" id="showTrack" role="tabpanel" aria-live="polite"></div>
   </div>
 </section>
 
+<!-- ============================= RAIN SHOWCASE ============================= -->
+<section class="section" id="rain">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">04 / R.A.I.N</p>
+      <h2 class="section-title">Disaster management, one page at a time.</h2>
+      <p class="section-sub">R.A.I.N is an AI-assisted disaster preparedness web app for Tanauan City, Batangas. These are its core monitoring pages. Step through them, or open the full app.</p>
+    </div>
+    <div class="rain-show reveal" id="rainShow">
+      <div class="rain-list" id="rainList" role="tablist" aria-label="RAIN monitoring pages" aria-orientation="vertical"></div>
+      <div class="rain-stage">
+        <div class="rain-frame">
+          <div class="rain-bar"><i></i><i></i><i></i><span id="rainUrl">rain/weather.html</span></div>
+          <div class="rain-view" id="rainView"><iframe id="rainIframe" title="RAIN page preview" loading="lazy" referrerpolicy="no-referrer"></iframe></div>
+        </div>
+        <div class="rain-info">
+          <div class="rain-meta"><span id="rainCount">01 / 07</span><ul class="pi-tech" id="rainTags"></ul></div>
+          <h3 id="rainName"></h3>
+          <p id="rainDesc"></p>
+          <div class="rain-actions">
+            <button type="button" class="rain-step" id="rainPrev" aria-label="Previous page">← Prev</button>
+            <button type="button" class="rain-step" id="rainNext" aria-label="Next page">Next →</button>
+            <a class="pi-open" id="rainOpen" href="./rain/weather.html" target="_blank" rel="noopener" data-cursor="OPEN ↗">OPEN PAGE <span>↗</span></a>
+            <a class="pi-src" href="./rain/index.html" target="_blank" rel="noopener">FULL APP ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="lab">
   <div class="container">
     <div class="section-head reveal">
-      <p class="eyebrow">04 / Lab</p>
+      <p class="eyebrow">05 / Lab</p>
       <h2 class="section-title">Things I built because I wanted to see if I could.</h2>
       <p class="section-sub">Small, unfinished, occasionally weird. Press run.</p>
     </div>
@@ -187,7 +220,7 @@
 <section class="section" id="experience">
   <div class="container">
     <div class="section-head reveal">
-      <p class="eyebrow">05 / Experience</p>
+      <p class="eyebrow">06 / Experience</p>
       <h2 class="section-title">Where I've applied it.</h2>
     </div>
 
@@ -252,7 +285,7 @@
 <section class="section" id="education">
   <div class="container">
     <div class="section-head reveal" style="margin:0 auto 56px;text-align:center;">
-      <p class="eyebrow" style="justify-content:center;">06 / Education &amp; Journey</p>
+      <p class="eyebrow" style="justify-content:center;">07 / Education &amp; Journey</p>
       <h2 class="section-title">Where it started.</h2>
     </div>
 
@@ -278,9 +311,9 @@
       <div class="timeline-item reveal"><div class="timeline-dot"></div><details class="tl"><summary><p class="timeline-tag">Dec 2025</p><h3 class="timeline-title">PUP STC 1st General Assembly</h3><i class="tl-plus" aria-hidden="true"></i></summary><p class="timeline-desc">Took part in the Miniature Exhibit as part of the student community.</p><div class="timeline-skills"><span class="tech-pill">Campus event</span></div></details></div>
     </div>
     <div class="moments">
-      <button type="button" class="moment reveal" data-img="assets/certs/graduation-portrait.jpg" data-cap="Graduation portrait"><img src="assets/certs/graduation-portrait.jpg" alt="Sebastian in graduation toga with a PUP medal" loading="lazy"><span>Graduation portrait</span></button>
-      <button type="button" class="moment reveal" data-img="assets/certs/bronze-awardee.jpg" data-cap="Bronze Awardee, Diploma in Information Technology"><img src="assets/certs/bronze-awardee-thumb.jpg" alt="Sebastian receiving his award on stage as a Bronze Awardee" loading="lazy"><span>Bronze Awardee, Diploma in IT</span></button>
-      <button type="button" class="moment reveal" data-img="assets/certs/thesis-defended.jpg" data-cap="Thesis defended with my team"><img src="assets/certs/thesis-defended.jpg" alt="Sebastian and teammates after the thesis defense" loading="lazy"><span>Thesis defended, with the team</span></button>
+      <figure class="moment reveal"><img src="assets/certs/graduation-portrait.jpg" alt="Sebastian in graduation toga with a PUP medal" loading="lazy"><span>Graduation portrait</span></figure>
+      <figure class="moment reveal"><img src="assets/certs/bronze-awardee-thumb.jpg" alt="Sebastian receiving his award on stage as a Bronze Awardee" loading="lazy"><span>Bronze Awardee, Diploma in IT</span></figure>
+      <figure class="moment reveal"><img src="assets/certs/thesis-defended.jpg" alt="Sebastian and teammates after the thesis defense" loading="lazy"><span>Thesis defended, with the team</span></figure>
     </div>
   </div>
 </section>
@@ -291,32 +324,32 @@
 <section class="section" id="certificates">
   <div class="container">
     <div class="section-head reveal">
-      <p class="eyebrow">07 / Certificates &amp; Achievements</p>
+      <p class="eyebrow">08 / Certificates &amp; Achievements</p>
       <h2 class="section-title">Proof I keep showing up.</h2>
-      <p class="section-sub">Awards, licenses, seminars and campus events from my time at PUP Sto. Tomas. Tap “View” to see the actual certificate.</p>
+      <p class="section-sub">Awards, licenses, seminars and campus events from my time at PUP Sto. Tomas.</p>
     </div>
     <figure class="cert-feature reveal"><img src="assets/certs/academic-photo.jpg" alt="Sebastian holding his academic achievement certificates and medals" loading="lazy"><figcaption><b>10 Oct 2025</b>Four recognitions and medals for AY 2024–2025: Academic Achiever, Academic Distinction, NC II Special Recognition and the Outstanding Service Award.</figcaption></figure>
     <div class="chips" role="group" aria-label="Filter certificates"><button type="button" class="chip on" data-f="All">All</button><button type="button" class="chip" data-f="Award">Award</button><button type="button" class="chip" data-f="License">License</button><button type="button" class="chip" data-f="Seminar">Seminar</button><button type="button" class="chip" data-f="Webinar">Webinar</button><button type="button" class="chip" data-f="Event">Event</button></div>
     <ul class="cert-list">
-<li class="cert-row reveal" data-type="Event"><span class="cert-type">Event</span><div><h3 class="cert-title">Miniature Exhibit · PUP STC 1st General Assembly</h3><p class="cert-issuer">ISKOnnovators Student Community · Central Student Council</p></div><span class="cert-date">Dec 2025</span><button type="button" class="cert-view" data-img="assets/certs/exhibit.jpg" data-cap="Miniature Exhibit · PUP STC 1st General Assembly">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Academic Achiever, AY 2024–2025</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Academic Achiever, AY 2024–2025">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Special Recognition for Academic Distinction</h3><p class="cert-issuer">PUP Sto. Tomas Campus · AY 2024–2025</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Special Recognition for Academic Distinction">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Special Recognition for Academic Achievements</h3><p class="cert-issuer">Passing Computer Systems Servicing NC II</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Special Recognition for Academic Achievements">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Outstanding Service Award</h3><p class="cert-issuer">Graduation Steering Committee 2025</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Outstanding Service Award">View</button></li>
-<li class="cert-row reveal" data-type="Webinar"><span class="cert-type">Webinar</span><div><h3 class="cert-title">AI in Cyber Defense: Trends and Innovation</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">May 2025</span><button type="button" class="cert-view" data-img="assets/certs/ai-cyber-defense.jpg" data-cap="AI in Cyber Defense: Trends and Innovation">View</button></li>
-<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Analytics: Making Sense of Data</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">May 2025</span><button type="button" class="cert-view" data-img="assets/certs/analytics.jpg" data-cap="Analytics: Making Sense of Data">View</button></li>
-<li class="cert-row reveal" data-type="Webinar"><span class="cert-type">Webinar</span><div><h3 class="cert-title">Big Data</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Apr 2025</span><button type="button" class="cert-view" data-img="assets/certs/big-data.jpg" data-cap="Big Data">View</button></li>
-<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Social Media for Business</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Apr 2025</span><button type="button" class="cert-view" data-img="assets/certs/social-media.jpg" data-cap="Social Media for Business">View</button></li>
-<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Internet of Things (IoT)</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Mar 2025</span><button type="button" class="cert-view" data-img="assets/certs/iot.jpg" data-cap="Internet of Things (IoT)">View</button></li>
-<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Digital Currencies and e-Transactions</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Mar 2025</span><button type="button" class="cert-view" data-img="assets/certs/digital-currencies.jpg" data-cap="Digital Currencies and e-Transactions">View</button></li>
-<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Introduction to Search Engine Optimization</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">2025</span><button type="button" class="cert-view" data-img="assets/certs/seo.jpg" data-cap="Introduction to Search Engine Optimization">View</button></li>
+<li class="cert-row reveal" data-type="Event"><span class="cert-type">Event</span><div><h3 class="cert-title">Miniature Exhibit · PUP STC 1st General Assembly</h3><p class="cert-issuer">ISKOnnovators Student Community · Central Student Council</p></div><span class="cert-date">Dec 2025</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Academic Achiever, AY 2024–2025</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Oct 2025</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Special Recognition for Academic Distinction</h3><p class="cert-issuer">PUP Sto. Tomas Campus · AY 2024–2025</p></div><span class="cert-date">Oct 2025</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Special Recognition for Academic Achievements</h3><p class="cert-issuer">Passing Computer Systems Servicing NC II</p></div><span class="cert-date">Oct 2025</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Outstanding Service Award</h3><p class="cert-issuer">Graduation Steering Committee 2025</p></div><span class="cert-date">Oct 2025</span></li>
+<li class="cert-row reveal" data-type="Webinar"><span class="cert-type">Webinar</span><div><h3 class="cert-title">AI in Cyber Defense: Trends and Innovation</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">May 2025</span></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Analytics: Making Sense of Data</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">May 2025</span></li>
+<li class="cert-row reveal" data-type="Webinar"><span class="cert-type">Webinar</span><div><h3 class="cert-title">Big Data</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Apr 2025</span></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Social Media for Business</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Apr 2025</span></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Internet of Things (IoT)</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Mar 2025</span></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Digital Currencies and e-Transactions</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Mar 2025</span></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Introduction to Search Engine Optimization</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">2025</span></li>
 <li class="cert-row reveal" data-type="Event"><span class="cert-type">Event</span><div><h3 class="cert-title">Arduino Day</h3><p class="cert-issuer">Event</p></div><span class="cert-date">March</span><span></span></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Mobile Legends Tournament — 2nd Place</h3><p class="cert-issuer">Institute of Technology · PUP Sto. Tomas</p></div><span class="cert-date">Nov 2024</span><button type="button" class="cert-view" data-img="assets/certs/mlbb-officer.jpg" data-cap="Mobile Legends Tournament — 2nd Place">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Certificate of Appreciation — Officer</h3><p class="cert-issuer">Institute of Technology · AY 2023–2024</p></div><span class="cert-date">Nov 2024</span><button type="button" class="cert-view" data-img="assets/certs/mlbb-officer.jpg" data-cap="Certificate of Appreciation — Officer">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Top 4 Performing Student, DIT 1-1</h3><p class="cert-issuer">2nd Semester, SY 2022–2023 · PUP Sto. Tomas</p></div><span class="cert-date">Jan 2024</span><button type="button" class="cert-view" data-img="assets/certs/top4-dit.jpg" data-cap="Top 4 Performing Student, DIT 1-1">View</button></li>
-<li class="cert-row reveal" data-type="License"><span class="cert-type">License</span><div><h3 class="cert-title">TESDA National Certificate II — Computer Systems Servicing</h3><p class="cert-issuer">Valid until Nov 5, 2028</p></div><span class="cert-date">Nov 2023</span><button type="button" class="cert-view" data-img="assets/certs/tesda-nc2.jpg" data-cap="TESDA National Certificate II — Computer Systems Servicing">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">President’s List Award, 2nd Semester AY 2022–2023</h3><p class="cert-issuer">Polytechnic University of the Philippines</p></div><span class="cert-date">Sep 2023</span><button type="button" class="cert-view" data-img="assets/certs/pres-list-2023-2.jpg" data-cap="President’s List Award, 2nd Semester AY 2022–2023">View</button></li>
-<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">President’s List Award, 1st Semester AY 2022–2023</h3><p class="cert-issuer">Polytechnic University of the Philippines</p></div><span class="cert-date">May 2023</span><button type="button" class="cert-view" data-img="assets/certs/pres-list-2023-1.jpg" data-cap="President’s List Award, 1st Semester AY 2022–2023">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Mobile Legends Tournament — 2nd Place</h3><p class="cert-issuer">Institute of Technology · PUP Sto. Tomas</p></div><span class="cert-date">Nov 2024</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Certificate of Appreciation — Officer</h3><p class="cert-issuer">Institute of Technology · AY 2023–2024</p></div><span class="cert-date">Nov 2024</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Top 4 Performing Student, DIT 1-1</h3><p class="cert-issuer">2nd Semester, SY 2022–2023 · PUP Sto. Tomas</p></div><span class="cert-date">Jan 2024</span></li>
+<li class="cert-row reveal" data-type="License"><span class="cert-type">License</span><div><h3 class="cert-title">TESDA National Certificate II — Computer Systems Servicing</h3><p class="cert-issuer">Valid until Nov 5, 2028</p></div><span class="cert-date">Nov 2023</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">President’s List Award, 2nd Semester AY 2022–2023</h3><p class="cert-issuer">Polytechnic University of the Philippines</p></div><span class="cert-date">Sep 2023</span></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">President’s List Award, 1st Semester AY 2022–2023</h3><p class="cert-issuer">Polytechnic University of the Philippines</p></div><span class="cert-date">May 2023</span></li>
     </ul>
   </div>
 </section>
@@ -327,7 +360,7 @@
 <section class="section" id="why">
   <div class="container">
     <div class="section-head reveal">
-      <p class="eyebrow">08 / Why Work With Me</p>
+      <p class="eyebrow">09 / Why Work With Me</p>
       <h2 class="section-title">How I actually work.</h2>
       <p class="section-sub">Less about buzzwords, more about how I show up on a team and a problem.</p>
     </div>
@@ -370,7 +403,7 @@
 <!-- ============================= CONTACT ============================= -->
 <section class="section" id="contact">
   <div class="container contact-wrap">
-    <p class="eyebrow" style="justify-content:center;">09 / Contact</p>
+    <p class="eyebrow" style="justify-content:center;">10 / Contact</p>
     <h2 class="contact-title"><span class="ln"><span>LET'S BUILD</span></span><span class="ln"><span>SOMETHING</span></span><span class="ln"><span class="gradient-text">INTERESTING.</span></span></h2>
     <span class="contact-rule" aria-hidden="true"></span>
     <p class="contact-sub reveal">Available for:</p>
@@ -396,7 +429,6 @@
   </div>
 </footer>
 
-<div class="lb" id="lb" hidden><button type="button" class="lb-x" aria-label="Close">×</button><img alt=""><p></p></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="script.js"></script>
