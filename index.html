@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sebastian M. Gonzaga — IT Student &amp; Aspiring AI Developer</title>
+<meta name="description" content="Portfolio of Sebastian M. Gonzaga, an IT student and aspiring AI/software developer from the Philippines, building systems, AI tools, and practical digital solutions.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600&family=Baloo+2:wght@800&family=VT323&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FAF8F4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232A2B30'/%3E%3Cpath d='M42 21c-2-5-16-6-18 1-2 8 18 5 18 13 0 8-16 8-19 1' fill='none' stroke='%235FC6BA' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sebastian Gonzaga — Digital Lab">
+<meta property="og:description" content="Web, AI, systems and experiments. I build things, break things, and figure out why they broke.">
+<script>try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip" href="#about">Skip to content</a>
+<div id="scroll-progress"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="cursor" id="cursor" aria-hidden="true"><span id="cursorLabel"></span></div>
+<a class="now-building" href="#projects"><i></i><span><small>CURRENTLY BUILDING</small>R.A.I.N · Disaster Management System</span></a>
+<div class="modal" id="labModal" role="dialog" aria-modal="true" aria-labelledby="labTitle" hidden>
+  <div class="modal-card">
+    <div class="modal-bar"><span id="labCode">LAB / 001</span><button type="button" id="labClose" aria-label="Close experiment">Close ✕</button></div>
+    <canvas id="labCanvas" width="720" height="380"></canvas>
+    <div class="modal-foot"><b id="labTitle"></b><span id="labHint"></span></div>
+  </div>
+</div>
+
+
+<!-- ============================= NAV ============================= -->
+<header class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a href="#home" class="logo"><span class="dot"></span> sebastian.dev</a>
+    <nav class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#lab">Lab</a>
+      <a href="#experience">Experience</a>
+      <a href="#certificates">Certificates</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="nav-cta">Let's talk</a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><i class="fa-solid fa-moon"></i><i class="fa-solid fa-sun"></i></button>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#skills">Skills</a>
+  <a href="#projects">Projects</a>
+      <a href="#lab">Lab</a>
+  <a href="#experience">Experience</a>
+  <a href="#certificates">Certificates</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<!-- ============================= HERO ============================= -->
+<section class="hero" id="home">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <div>
+      <p class="hero-meta"><span>LAB_01</span><span>PH / <b id="clock">--:--:--</b></span><span class="live"><i></i>online</span></p>
+      <h1 class="hero-name"><span class="ln"><span>SEBASTIAN</span></span><span class="ln"><span class="gradient-text">GONZAGA</span></span></h1>
+      <p class="hero-tags">WEB / AI / SYSTEMS / EXPERIMENTS</p>
+      <p class="hero-desc">I build things, break things, and figure out why they broke.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary magnetic"><span>Enter the projects</span> <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="#lab" class="btn btn-ghost magnetic"><span>Open the lab</span></a>
+      </div>
+    </div>
+    <div class="hero-panel">
+      <div class="hero-panel-bar"><span></span><span></span><span></span><span class="hero-panel-title">status.json</span></div>
+      <div class="hero-panel-body" id="status">
+        <div class="line">{</div>
+        <div class="line">  <span class="key">"name"</span>: <span class="val">"Sebastian Gonzaga"</span>,</div>
+        <div class="line">  <span class="key">"focus"</span>: [<span class="str">"Web"</span>, <span class="str">"AI"</span>, <span class="str">"Systems"</span>],</div>
+        <div class="line">  <span class="key">"currently"</span>: <span class="val">"<span id="cur">building</span>"</span>,</div>
+        <div class="line">  <span class="key">"curiosity"</span>: <span class="str">true</span>,</div>
+        <div class="line">  <span class="key">"time"</span>: <span class="val">"<span id="stime">--:--:--</span> PHT"</span>,</div>
+        <div class="line">  <span class="key">"status"</span>: <span class="val">"<span id="stat">still learning, always shipping</span>"</span></div>
+        <div class="line">}<span class="caret"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator"><span>SCROLL TO EXPLORE</span><i class="fa-solid fa-chevron-down"></i></div>
+</section>
+
+<!-- ============================= ABOUT ============================= -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">01 / About</p>
+      <h2 class="section-title">A bit about how I think.</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm an Information Technology student who enjoys building systems, experimenting with AI, and learning new technologies. I like turning ideas into practical applications while continuously improving my development skills.</p>
+        <p>Most of what I know came from breaking things first — a script that wouldn't run, a database that wouldn't connect — and staying with the problem until it made sense. That habit is what pulls me toward AI and systems work now.</p>
+
+        <div class="about-stats">
+          <div class="stat-card">
+            <div class="stat-num">20+</div>
+            <div class="stat-label">Languages &amp; Tools</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">13</div>
+            <div class="stat-label">Projects Built</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-visual reveal">
+        <div class="file-tab">// about_sebastian.py</div>
+        <div class="code-line"><span class="ln">1</span><span><span class="kw">class</span> <span class="fn">Developer</span>:</span></div>
+        <div class="code-line"><span class="ln">2</span><span>&nbsp;&nbsp;<span class="kw">def</span> <span class="fn">__init__</span>(self):</span></div>
+        <div class="code-line" data-note="yes, that is me. Sebastian M. Gonzaga." tabindex="0"><span class="ln">3</span><span>&nbsp;&nbsp;&nbsp;&nbsp;self.name = <span class="st">"Sebastian Gonzaga"</span></span></div>
+        <div class="code-line" data-note="built somewhere in the Philippines." tabindex="0"><span class="ln">4</span><span>&nbsp;&nbsp;&nbsp;&nbsp;self.based_in = <span class="st">"Philippines"</span></span></div>
+        <div class="code-line" data-note="web first, AI is what I keep poking at, systems hold it together." tabindex="0"><span class="ln">5</span><span>&nbsp;&nbsp;&nbsp;&nbsp;self.focus = [<span class="st">"Web"</span>, <span class="st">"AI"</span>, <span class="st">"Systems"</span>]</span></div>
+        <div class="code-line" data-note="interfaces that move, games that react, ideas that need a prototype." tabindex="0"><span class="ln">6</span><span>&nbsp;&nbsp;&nbsp;&nbsp;self.likes = [<span class="st">"building"</span>, <span class="st">"animation"</span>, <span class="st">"games"</span>]</span></div>
+        <div class="code-line" data-note="a script that would not run, a database that would not connect." tabindex="0"><span class="ln">7</span><span>&nbsp;&nbsp;&nbsp;&nbsp;self.learns = [<span class="st">"break"</span>, <span class="st">"debug"</span>, <span class="st">"ship"</span>]</span></div>
+        <div class="code-line" data-note="curiosity = true. not up for debate." tabindex="0"><span class="ln">8</span><span>&nbsp;&nbsp;&nbsp;&nbsp;self.curious = <span class="kw">True</span></span></div>
+        <div class="code-line"><span class="ln">9</span><span></span></div>
+        <div class="code-line" data-note="one project, one bug, one late night at a time." tabindex="0"><span class="ln">10</span><span>&nbsp;&nbsp;<span class="cm"># still learning, always shipping</span></span></div>
+        <p class="code-note" id="codeNote">hover a line</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ============================= SKILLS ============================= -->
+<section class="section" id="skills">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">02 / Toolkit</p>
+      <h2 class="section-title">What's on the workbench.</h2>
+      <p class="section-sub">No percentages. Just the things I actually reach for, and the order I learned them.</p>
+    </div>
+    <div class="toolkit"><div class="tk-row reveal"><span class="tk-label">PROGRAMMING</span><div class="tk-pills"><span class="pill" data-cursor="">Python</span><span class="pill" data-cursor="">Java</span><span class="pill" data-cursor="">C++</span><span class="pill" data-cursor="">C#</span></div></div><div class="tk-row reveal"><span class="tk-label">WEB</span><div class="tk-pills"><span class="pill" data-cursor="">HTML</span><span class="pill" data-cursor="">CSS</span><span class="pill" data-cursor="">JavaScript</span><span class="pill" data-cursor="">React</span><span class="pill" data-cursor="">GSAP</span></div></div><div class="tk-row reveal"><span class="tk-label">BACKEND / DATA</span><div class="tk-pills"><span class="pill" data-cursor="">PHP</span><span class="pill" data-cursor="">SQL</span><span class="pill" data-cursor="">MySQL</span><span class="pill" data-cursor="">Firebase</span><span class="pill" data-cursor="">Supabase</span></div></div><div class="tk-row reveal"><span class="tk-label">AI</span><div class="tk-pills"><span class="pill" data-cursor="">OpenAI</span><span class="pill" data-cursor="">Gemini</span><span class="pill" data-cursor="">APIs</span><span class="pill" data-cursor="">AI-assisted development</span></div></div><div class="tk-row reveal"><span class="tk-label">TOOLS</span><div class="tk-pills"><span class="pill" data-cursor="">Git</span><span class="pill" data-cursor="">GitHub</span><span class="pill" data-cursor="">VS Code</span><span class="pill" data-cursor="">Vercel</span></div></div></div>
+  </div>
+</section>
+
+<!-- ============================= PROJECTS ============================= -->
+<section class="section" id="projects">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">03 / Projects</p>
+      <h2 class="section-title">Artifacts from the lab.</h2>
+      <p class="section-sub">Thirteen things I've built, sorted by type. Pick a category.</p>
+    </div>
+    <div class="proj-tabs reveal" id="projTabs" role="tablist" aria-label="Project categories"></div>
+    <div class="proj-grid" id="showTrack" role="tabpanel" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="section" id="lab">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">04 / Lab</p>
+      <h2 class="section-title">Things I built because I wanted to see if I could.</h2>
+      <p class="section-sub">Small, unfinished, occasionally weird. Press run.</p>
+    </div>
+    <div class="lab-grid" id="labGrid"></div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ============================= EXPERIENCE ============================= -->
+<section class="section" id="experience">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">05 / Experience</p>
+      <h2 class="section-title">Where I've applied it.</h2>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <details class="tl" open>
+          <summary><p class="timeline-tag">On-the-Job Training</p><h3 class="timeline-title">Database &amp; System Development</h3><i class="tl-plus" aria-hidden="true"></i></summary>
+          <p class="timeline-desc">Worked on building and maintaining structured databases, designing simple internal systems, and supporting day-to-day technical tasks during OJT.</p>
+          <div class="timeline-skills">
+          <span class="tech-pill">SQL</span>
+          <span class="tech-pill">System Design</span>
+        </div>
+        </details>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <details class="tl">
+          <summary><p class="timeline-tag">Applied Work</p><h3 class="timeline-title">Excel &amp; Office Automation</h3><i class="tl-plus" aria-hidden="true"></i></summary>
+          <p class="timeline-desc">Automated repetitive spreadsheet and office tasks, building templates and simple scripts to speed up reporting and data entry.</p>
+          <div class="timeline-skills">
+          <span class="tech-pill">Excel</span>
+          <span class="tech-pill">Automation</span>
+        </div>
+        </details>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <details class="tl">
+          <summary><p class="timeline-tag">Coursework &amp; Practice</p><h3 class="timeline-title">Programming &amp; Problem Solving</h3><i class="tl-plus" aria-hidden="true"></i></summary>
+          <p class="timeline-desc">Practiced core programming and algorithmic problem solving across Python, Java, and C++ through class projects and independent practice.</p>
+          <div class="timeline-skills">
+          <span class="tech-pill">Python</span>
+          <span class="tech-pill">Java</span>
+          <span class="tech-pill">C++</span>
+        </div>
+        </details>
+      </div>
+
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <details class="tl">
+          <summary><p class="timeline-tag">Ongoing</p><h3 class="timeline-title">Technical Problem Solving</h3><i class="tl-plus" aria-hidden="true"></i></summary>
+          <p class="timeline-desc">Continuously debugging, researching, and troubleshooting — treating every stuck moment as part of the process rather than a setback.</p>
+          <div class="timeline-skills">
+          <span class="tech-pill">Debugging</span>
+          <span class="tech-pill">Research</span>
+        </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ============================= EDUCATION ============================= -->
+<section class="section" id="education">
+  <div class="container">
+    <div class="section-head reveal" style="margin:0 auto 56px;text-align:center;">
+      <p class="eyebrow" style="justify-content:center;">06 / Education &amp; Journey</p>
+      <h2 class="section-title">Where it started.</h2>
+    </div>
+
+    <div class="edu-card reveal">
+      <div class="edu-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div>
+        <h3 class="edu-school">Polytechnic University of the Philippines</h3>
+        <p class="edu-degree">Diploma in Information Technology</p>
+        <p class="edu-meta">FOCUS: SOFTWARE &amp; AI DEVELOPMENT · PHILIPPINES</p>
+      </div>
+    </div>
+    <div class="timeline journey">
+      <div class="timeline-item reveal"><div class="timeline-dot"></div><details class="tl" open><summary><p class="timeline-tag">AY 2022–2023</p><h3 class="timeline-title">Started DIT at PUP Sto. Tomas</h3><i class="tl-plus" aria-hidden="true"></i></summary><p class="timeline-desc">Began the Diploma in Information Technology, made the President’s List in both semesters, and finished 2nd semester as a Top 4 performing student of DIT 1-1.</p><div class="timeline-skills"><span class="tech-pill">President’s List ×2</span><span class="tech-pill">Top 4 · DIT 1-1</span></div></details></div>
+      <div class="timeline-item reveal"><div class="timeline-dot"></div><details class="tl"><summary><p class="timeline-tag">Nov 2023</p><h3 class="timeline-title">TESDA NC II · Computer Systems Servicing</h3><i class="tl-plus" aria-hidden="true"></i></summary><p class="timeline-desc">Passed national assessment in installing and configuring computer systems, setting up networks and servers, and maintaining and repairing systems.</p><div class="timeline-skills"><span class="tech-pill">Networks</span><span class="tech-pill">Servers</span><span class="tech-pill">Hardware</span></div></details></div>
+      <div class="timeline-item reveal"><div class="timeline-dot"></div><details class="tl"><summary><p class="timeline-tag">AY 2023–2024</p><h3 class="timeline-title">Officer, Institute of Technology</h3><i class="tl-plus" aria-hidden="true"></i></summary><p class="timeline-desc">Served as an officer of the department and joined the campus Mobile Legends Tournament, placing 2nd. Both recognized in November 2024.</p><div class="timeline-skills"><span class="tech-pill">Leadership</span><span class="tech-pill">Teamwork</span><span class="tech-pill">2nd Place</span></div></details></div>
+      <div class="timeline-item reveal"><div class="timeline-dot"></div><details class="tl"><summary><p class="timeline-tag">Mar – May 2025</p><h3 class="timeline-title">Seminar and webinar run</h3><i class="tl-plus" aria-hidden="true"></i></summary><p class="timeline-desc">Attended seven talks on IoT, digital currencies, social media for business, SEO, big data, analytics and AI in cyber defense.</p><div class="timeline-skills"><span class="tech-pill">IoT</span><span class="tech-pill">Big Data</span><span class="tech-pill">Analytics</span><span class="tech-pill">Cybersecurity</span><span class="tech-pill">SEO</span></div></details></div>
+      <div class="timeline-item reveal"><div class="timeline-dot"></div><details class="tl"><summary><p class="timeline-tag">Oct 2025</p><h3 class="timeline-title">Academic and service awards</h3><i class="tl-plus" aria-hidden="true"></i></summary><p class="timeline-desc">Recognized as Academic Achiever with Special Recognitions for academic distinction and the NC II pass, plus an Outstanding Service Award for the Graduation Steering Committee.</p><div class="timeline-skills"><span class="tech-pill">4 medals</span><span class="tech-pill">AY 2024–2025</span></div></details></div>
+      <div class="timeline-item reveal"><div class="timeline-dot"></div><details class="tl"><summary><p class="timeline-tag">Dec 2025</p><h3 class="timeline-title">PUP STC 1st General Assembly</h3><i class="tl-plus" aria-hidden="true"></i></summary><p class="timeline-desc">Took part in the Miniature Exhibit as part of the student community.</p><div class="timeline-skills"><span class="tech-pill">Campus event</span></div></details></div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ============================= CERTIFICATES ============================= -->
+<section class="section" id="certificates">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">07 / Certificates &amp; Achievements</p>
+      <h2 class="section-title">Proof I keep showing up.</h2>
+      <p class="section-sub">Awards, licenses, seminars and campus events from my time at PUP Sto. Tomas. Tap “View” to see the actual certificate.</p>
+    </div>
+    <figure class="cert-feature reveal"><img src="assets/certs/academic-photo.jpg" alt="Sebastian holding his academic achievement certificates and medals" loading="lazy"><figcaption><b>10 Oct 2025</b> · Four recognitions and medals for AY 2024–2025: Academic Achiever, Academic Distinction, NC II Special Recognition and the Outstanding Service Award.</figcaption></figure>
+    <div class="chips" role="group" aria-label="Filter certificates"><button type="button" class="chip on" data-f="All">All</button><button type="button" class="chip" data-f="Award">Award</button><button type="button" class="chip" data-f="License">License</button><button type="button" class="chip" data-f="Seminar">Seminar</button><button type="button" class="chip" data-f="Webinar">Webinar</button><button type="button" class="chip" data-f="Event">Event</button></div>
+    <ul class="cert-list">
+<li class="cert-row reveal" data-type="Event"><span class="cert-type">Event</span><div><h3 class="cert-title">Miniature Exhibit · PUP STC 1st General Assembly</h3><p class="cert-issuer">ISKOnnovators Student Community · Central Student Council</p></div><span class="cert-date">Dec 2025</span><button type="button" class="cert-view" data-img="assets/certs/exhibit.jpg" data-cap="Miniature Exhibit · PUP STC 1st General Assembly">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Academic Achiever, AY 2024–2025</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Academic Achiever, AY 2024–2025">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Special Recognition for Academic Distinction</h3><p class="cert-issuer">PUP Sto. Tomas Campus · AY 2024–2025</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Special Recognition for Academic Distinction">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Special Recognition for Academic Achievements</h3><p class="cert-issuer">Passing Computer Systems Servicing NC II</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Special Recognition for Academic Achievements">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Outstanding Service Award</h3><p class="cert-issuer">Graduation Steering Committee 2025</p></div><span class="cert-date">Oct 2025</span><button type="button" class="cert-view" data-img="assets/certs/academic-awards.jpg" data-cap="Outstanding Service Award">View</button></li>
+<li class="cert-row reveal" data-type="Webinar"><span class="cert-type">Webinar</span><div><h3 class="cert-title">AI in Cyber Defense: Trends and Innovation</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">May 2025</span><button type="button" class="cert-view" data-img="assets/certs/ai-cyber-defense.jpg" data-cap="AI in Cyber Defense: Trends and Innovation">View</button></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Analytics: Making Sense of Data</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">May 2025</span><button type="button" class="cert-view" data-img="assets/certs/analytics.jpg" data-cap="Analytics: Making Sense of Data">View</button></li>
+<li class="cert-row reveal" data-type="Webinar"><span class="cert-type">Webinar</span><div><h3 class="cert-title">Big Data</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Apr 2025</span><button type="button" class="cert-view" data-img="assets/certs/big-data.jpg" data-cap="Big Data">View</button></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Social Media for Business</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Apr 2025</span><button type="button" class="cert-view" data-img="assets/certs/social-media.jpg" data-cap="Social Media for Business">View</button></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Internet of Things (IoT)</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Mar 2025</span><button type="button" class="cert-view" data-img="assets/certs/iot.jpg" data-cap="Internet of Things (IoT)">View</button></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Digital Currencies and e-Transactions</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">Mar 2025</span><button type="button" class="cert-view" data-img="assets/certs/digital-currencies.jpg" data-cap="Digital Currencies and e-Transactions">View</button></li>
+<li class="cert-row reveal" data-type="Seminar"><span class="cert-type">Seminar</span><div><h3 class="cert-title">Introduction to Search Engine Optimization</h3><p class="cert-issuer">PUP Sto. Tomas Campus</p></div><span class="cert-date">2025</span><button type="button" class="cert-view" data-img="assets/certs/seo.jpg" data-cap="Introduction to Search Engine Optimization">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Mobile Legends Tournament — 2nd Place</h3><p class="cert-issuer">Institute of Technology · PUP Sto. Tomas</p></div><span class="cert-date">Nov 2024</span><button type="button" class="cert-view" data-img="assets/certs/mlbb-officer.jpg" data-cap="Mobile Legends Tournament — 2nd Place">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Certificate of Appreciation — Officer</h3><p class="cert-issuer">Institute of Technology · AY 2023–2024</p></div><span class="cert-date">Nov 2024</span><button type="button" class="cert-view" data-img="assets/certs/mlbb-officer.jpg" data-cap="Certificate of Appreciation — Officer">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">Top 4 Performing Student, DIT 1-1</h3><p class="cert-issuer">2nd Semester, SY 2022–2023 · PUP Sto. Tomas</p></div><span class="cert-date">Jan 2024</span><button type="button" class="cert-view" data-img="assets/certs/top4-dit.jpg" data-cap="Top 4 Performing Student, DIT 1-1">View</button></li>
+<li class="cert-row reveal" data-type="License"><span class="cert-type">License</span><div><h3 class="cert-title">TESDA National Certificate II — Computer Systems Servicing</h3><p class="cert-issuer">Valid until Nov 5, 2028</p></div><span class="cert-date">Nov 2023</span><button type="button" class="cert-view" data-img="assets/certs/tesda-nc2.jpg" data-cap="TESDA National Certificate II — Computer Systems Servicing">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">President’s List Award, 2nd Semester AY 2022–2023</h3><p class="cert-issuer">Polytechnic University of the Philippines</p></div><span class="cert-date">Sep 2023</span><button type="button" class="cert-view" data-img="assets/certs/pres-list-2023-2.jpg" data-cap="President’s List Award, 2nd Semester AY 2022–2023">View</button></li>
+<li class="cert-row reveal" data-type="Award"><span class="cert-type">Award</span><div><h3 class="cert-title">President’s List Award, 1st Semester AY 2022–2023</h3><p class="cert-issuer">Polytechnic University of the Philippines</p></div><span class="cert-date">May 2023</span><button type="button" class="cert-view" data-img="assets/certs/pres-list-2023-1.jpg" data-cap="President’s List Award, 1st Semester AY 2022–2023">View</button></li>
+    </ul>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ============================= WHY WORK WITH ME ============================= -->
+<section class="section" id="why">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">08 / Why Work With Me</p>
+      <h2 class="section-title">How I actually work.</h2>
+      <p class="section-sub">Less about buzzwords, more about how I show up on a team and a problem.</p>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <i class="fa-solid fa-seedling why-icon"></i>
+        <h3 class="why-title">Willing to Learn</h3>
+        <p class="why-desc">I'd rather ask a question and learn it right than pretend I already know.</p>
+      </div>
+      <div class="why-card reveal">
+        <i class="fa-solid fa-shuffle why-icon"></i>
+        <h3 class="why-title">Adaptable</h3>
+        <p class="why-desc">Comfortable switching languages, tools, or plans when the project needs it.</p>
+      </div>
+      <div class="why-card reveal">
+        <i class="fa-solid fa-puzzle-piece why-icon"></i>
+        <h3 class="why-title">Problem Solver</h3>
+        <p class="why-desc">I like sitting with a hard bug longer than I probably should — and I usually get there.</p>
+      </div>
+      <div class="why-card reveal">
+        <i class="fa-solid fa-people-group why-icon"></i>
+        <h3 class="why-title">Team Player</h3>
+        <p class="why-desc">I communicate early, share progress often, and don't let people guess where I'm at.</p>
+      </div>
+      <div class="why-card reveal">
+        <i class="fa-solid fa-magnifying-glass why-icon"></i>
+        <h3 class="why-title">Curious by Default</h3>
+        <p class="why-desc">New tools, new frameworks, new corners of AI — I want to know how they work.</p>
+      </div>
+      <div class="why-card reveal">
+        <i class="fa-solid fa-handshake why-icon"></i>
+        <h3 class="why-title">Well-Rounded</h3>
+        <p class="why-desc">Just as comfortable in technical deep-dives as in non-technical, people-facing work.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= CONTACT ============================= -->
+<section class="section" id="contact">
+  <div class="container contact-wrap">
+    <p class="eyebrow" style="justify-content:center;">09 / Contact</p>
+    <h2 class="contact-title"><span class="ln"><span>LET'S BUILD</span></span><span class="ln"><span>SOMETHING</span></span><span class="ln"><span class="gradient-text">INTERESTING.</span></span></h2>
+    <span class="contact-rule" aria-hidden="true"></span>
+    <p class="contact-sub reveal">Available for:</p>
+    <ul class="avail reveal"><li>Web development</li><li>Frontend</li><li>AI-assisted development</li><li>Freelance projects</li><li>Creative web experiences</li></ul>
+    <div class="contact-actions reveal">
+      <a href="mailto:sebastiangonzaga08@gmail.com" class="btn btn-primary magnetic"><span>Email me</span> <i class="fa-solid fa-arrow-right"></i></a>
+      <a href="#" class="btn btn-ghost magnetic"><span>Download resume</span></a>
+    </div>
+    <button type="button" class="copy-mail magnetic reveal" id="copyMail" data-email="sebastiangonzaga08@gmail.com" data-cursor="COPY"><span>sebastiangonzaga08@gmail.com</span><em>copy</em></button>
+    <div class="contact-social reveal">
+      <a href="mailto:sebastiangonzaga08@gmail.com" class="social-icon magnetic" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+      <a href="#" class="social-icon magnetic" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="#" class="social-icon magnetic" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+    </div>
+    <p class="contact-tiny">built somewhere in the Philippines · curiosity = true</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>Sebastian M. Gonzaga © 2026</p>
+    <p>one project, one bug, one late night at a time.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+<div class="lb" id="lb" hidden><button type="button" class="lb-x" aria-label="Close">×</button><img alt=""><p></p></div>
+</body>
+</html>

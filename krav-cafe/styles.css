@@ -1,0 +1,291 @@
+/* --- Base Styles --- */
+/* NOTE: Google Fonts is loaded via <link> in HTML with display=swap — no @import needed here */
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+}
+
+/* --- Hero & Backgrounds --- */
+.hero-bg {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1f1f1f 100%);
+}
+
+/* --- Navbar --- */
+#navbar.scrolled {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+}
+
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 0;
+    height: 2px;
+    background: #111;
+    transition: width 0.4s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* --- Mobile Menu: hidden by default, shown via .open class --- */
+#mobile-menu {
+    display: none;
+}
+
+#mobile-menu.open {
+    display: block;
+}
+
+/* --- Visit Us Feature Grid --- */
+.feature-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 2rem;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    min-height: 120px;
+}
+
+@media (min-width: 1024px) {
+    .feature-item {
+        min-height: 160px;
+    }
+
+    .feature-item:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+        transform: translateY(-8px);
+    }
+}
+
+@media (max-width: 767px) {
+    .feature-item {
+        min-height: 110px;
+        padding: 1.25rem !important;
+    }
+}
+
+/* --- Menu Cards --- */
+.menu-card {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-card:hover {
+    transform: translateY(-12px) scale(1.04);
+    box-shadow: 0 40px 70px -20px rgba(0, 0, 0, 0.3);
+}
+
+.menu-card img {
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-card:hover img {
+    transform: scale(1.08);
+}
+
+#menu-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    cursor: grab;
+}
+
+#menu-scroll.dragging {
+    cursor: grabbing;
+    scroll-snap-type: none; /* disable snap while dragging for smoother feel */
+}
+
+#menu-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Gallery Tabs --- */
+.gallery-tab {
+    color: #888;
+    background: transparent;
+    cursor: pointer;
+    border: none;
+}
+
+.gallery-tab.active-tab {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+}
+
+/* --- Gallery Items --- */
+.gallery-item {
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center;
+}
+
+.gallery-item.hidden-item {
+    display: none;
+}
+
+.gallery-item.entering {
+    animation: galleryPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes galleryPop {
+    from { opacity: 0; transform: scale(0.8) translateY(16px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* --- Gallery Lightbox --- */
+#lightbox.hidden {
+    display: none;
+}
+
+#lightbox.flex {
+    display: flex;
+}
+
+/* Hover: image zooms, overlay slides up */
+.gallery-img {
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-item:hover .gallery-img {
+    transform: scale(1.12);
+}
+
+.gallery-overlay {
+    transition: opacity 0.4s ease;
+    opacity: 0;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-caption {
+    transform: translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.gallery-item:hover .gallery-caption {
+    transform: translateY(0);
+}
+
+/* --- Social Icons --- */
+.social-icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* --- Chat Window --- */
+#chat-window {
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+    animation: chatPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 85vh;
+}
+
+#chat-window.chat-hidden {
+    display: none;
+}
+
+@keyframes chatPop {
+    from { transform: scale(0.7) translateY(30px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 20px;
+}
+
+/* --- Status Dot Glow --- */
+#status-dot.bg-green-500 {
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+#status-dot.bg-red-500 {
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+/* --- Hero Fade In --- */
+.animate-fade-in {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: fadeInUp 1.2s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Map Container --- */
+#map-container {
+    width: 100%;
+    height: 400px;
+    border-radius: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
+}
+
+@media (min-width: 768px) {
+    #map-container {
+        height: 750px;
+    }
+}
+
+/* --- Mobile Responsive --- */
+@media (max-width: 768px) {
+    #chat-window {
+        inset-x: 12px;
+        bottom: 90px;
+        height: 460px;
+        border-radius: 20px;
+    }
+
+    #chat-messages {
+        padding: 16px;
+        font-size: 15px;
+    }
+
+    #chat-input {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    h1 {
+        font-size: 2.75rem;
+        line-height: 1.05;
+    }
+
+    .text-6xl {
+        font-size: 3.5rem;
+    }
+
+    section {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+    }
+
+    .mobile-nav-link:hover {
+        padding-left: 16px;
+        color: #111;
+    }
+}

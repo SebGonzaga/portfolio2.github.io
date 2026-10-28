@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRĀV Cafe Tanauan | Satisfy Your Krāvings</title>
+    <meta name="description" content="KRĀV Cafe Tanauan — your cozy cafe in Brgy. Santor, Tanauan City, Batangas. Enjoy coffee, rice meals, breakfast, free WiFi, drive-thru, and pet-friendly vibes.">
+
+    <!-- Preconnect for faster font & resource loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com">
+
+    <!-- Font with display=swap to prevent render blocking -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans bg-white text-black">
+
+    <nav id="navbar" class="bg-white border-b border-black sticky top-0 z-50 shadow-sm transition-all duration-300 py-5">
+        <div class="max-w-screen-2xl mx-auto px-6 flex items-center justify-between">
+            <div class="flex items-center gap-x-6">
+                <a href="#" class="flex items-center gap-x-3">
+                    <img src="2.png" alt="KRĀV Cafe Logo" class="h-12 w-auto" width="48" height="48">
+                </a>
+
+                <div class="flex items-center gap-2 px-3 py-1 bg-zinc-100 rounded-full border border-black/5">
+                    <span id="status-dot" class="w-2 h-2 rounded-full"></span>
+                    <span id="status-text" class="text-[10px] font-bold uppercase tracking-tighter">Checking...</span>
+                </div>
+            </div>
+
+            <div class="hidden md:flex items-center gap-x-10 text-sm font-medium uppercase tracking-widest">
+                <a href="#home" class="nav-link text-zinc-500 hover:text-black transition-colors">Home</a>
+                <a href="#menu" class="nav-link text-zinc-500 hover:text-black transition-colors">Menu</a>
+                <a href="#gallery" class="nav-link text-zinc-500 hover:text-black transition-colors">Gallery</a>
+                <a href="#map" class="nav-link text-zinc-500 hover:text-black transition-colors">Location</a>
+                <a href="#contact" class="nav-link text-zinc-500 hover:text-black transition-colors">Contact</a>
+            </div>
+
+            <button id="hamburger-btn"
+                    class="md:hidden w-12 h-12 flex items-center justify-center border-2 border-black rounded-3xl hover:bg-black hover:text-white transition-all">
+                <svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile menu: no "hidden" class — controlled by CSS + JS "open" class -->
+        <div id="mobile-menu" class="md:hidden bg-white border-t border-black">
+            <div class="flex flex-col px-6 py-8 text-lg font-medium">
+                <a href="#home" class="mobile-nav-link py-4 border-b border-black/10">Home</a>
+                <a href="#menu" class="mobile-nav-link py-4 border-b border-black/10">Menu</a>
+                <a href="#gallery" class="mobile-nav-link py-4 border-b border-black/10">Gallery</a>
+                <a href="#map" class="mobile-nav-link py-4 border-b border-black/10">Location</a>
+                <a href="#contact" class="mobile-nav-link py-4">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME SECTION -->
+    <section id="home" class="relative min-h-screen flex items-center overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('bg.jfif');">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/80 to-black/90"></div>
+        </div>
+
+        <div class="relative z-10 max-w-screen-2xl mx-auto px-6 text-center w-full">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-7xl md:text-8xl font-bold tracking-tighter text-white mb-4 animate-fade-in">
+                    KRĀV CAFE
+                </h1>
+                <p class="text-3xl md:text-4xl font-light text-white/90 tracking-wide mb-12">
+                    SATISFY YOUR KRĀVINGS
+                </p>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 text-white max-w-3xl mx-auto">
+                    <div class="border-l border-white/20 pl-4 text-left">
+                        <p class="uppercase text-[10px] tracking-[0.2em] text-white/50 mb-1">Mon — Thu</p>
+                        <p class="text-lg font-medium">10AM — 10PM</p>
+                    </div>
+                    <div class="border-l border-white/20 pl-4 text-left">
+                        <p class="uppercase text-[10px] tracking-[0.2em] text-white/50 mb-1">Friday</p>
+                        <p class="text-lg font-medium">10AM — 12MN</p>
+                    </div>
+                    <div class="border-l border-white/20 pl-4 text-left">
+                        <p class="uppercase text-[10px] tracking-[0.2em] text-white/50 mb-1">Saturday</p>
+                        <p class="text-lg font-medium">7AM — 12MN</p>
+                    </div>
+                    <div class="border-l border-white/20 pl-4 text-left">
+                        <p class="uppercase text-[10px] tracking-[0.2em] text-white/50 mb-1">Sunday</p>
+                        <p class="text-lg font-medium">7AM — 10PM</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <a href="#menu" class="px-12 py-6 bg-white text-black font-semibold rounded-3xl text-lg hover:scale-105 transition-all duration-300 shadow-xl">
+                        View Our Menu
+                    </a>
+                    <button id="chat-toggle-hero" class="group relative px-12 py-6 border-2 border-white/80 text-white font-semibold rounded-3xl text-lg overflow-hidden transition-all hover:border-white hover:scale-105">
+                        <span class="relative z-10 flex items-center gap-3 justify-center">
+                            Ask AI Barista <span class="text-2xl group-hover:rotate-12 transition-transform">☕</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center text-white/60">
+            <p class="text-xs tracking-widest mb-2">SCROLL TO EXPLORE</p>
+            <div class="w-px h-14 bg-gradient-to-b from-transparent via-white/50 to-transparent"></div>
+        </div>
+    </section>
+
+    <!-- MENU SECTION -->
+    <section id="menu" class="py-28 bg-white">
+        <div class="max-w-screen-2xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-16">
+                <div>
+                    <h2 class="text-6xl font-bold">Our Menu</h2>
+                    <p class="text-black/60 mt-3 text-xl">Scroll horizontally to explore</p>
+                </div>
+                <div class="hidden md:flex gap-4">
+                    <button id="menu-left-btn" class="w-14 h-14 border-2 border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white text-3xl transition-all">←</button>
+                    <button id="menu-right-btn" class="w-14 h-14 border-2 border-black rounded-full flex items-center justify-center hover:bg-black hover:text-white text-3xl transition-all">→</button>
+                </div>
+            </div>
+
+            <div id="menu-scroll" class="flex gap-8 overflow-x-auto pb-16 snap-x snap-mandatory scrollbar-hide scroll-smooth">
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 1.jpg" alt="Menu page 1" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 2.jpg" alt="Menu page 2" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 3.jpg" alt="Menu page 3" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 4.jpg" alt="Menu page 4" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 5.jpg" alt="Menu page 5" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 6.jpg" alt="Menu page 6" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 7.jpg" alt="Menu page 7" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+                <div class="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] snap-start">
+                    <div class="menu-card overflow-hidden rounded-3xl shadow-xl">
+                        <img src="menu 8.jpg" alt="Menu page 8" class="w-full h-auto object-cover" loading="lazy" width="600" height="800">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISIT US + MAP -->
+    <section id="map" class="py-28 bg-black text-white relative z-10 overflow-hidden">
+        <div class="max-w-screen-2xl mx-auto px-6">
+            <div class="grid md:grid-cols-12 gap-20 items-center">
+
+                <div class="md:col-span-5">
+                    <h2 class="text-6xl md:text-8xl font-bold mb-10 tracking-tighter">Visit Us</h2>
+                    <p class="text-xl md:text-3xl mb-14 opacity-80 font-light leading-snug">
+                        57 Brgy. Santor,<br>
+                        Tanauan City, Batangas
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-4 md:gap-8">
+                        <div class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left">
+                            <span class="text-4xl md:text-5xl flex-shrink-0">📶</span>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">Free WiFi</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">High Speed</p>
+                            </div>
+                        </div>
+                        <div class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left">
+                            <span class="text-4xl md:text-5xl flex-shrink-0">🚗</span>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">Drive-Thru</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">Available</p>
+                            </div>
+                        </div>
+                        <div class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left">
+                            <span class="text-4xl md:text-5xl flex-shrink-0">🪑</span>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">77 Seats</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">Seating</p>
+                            </div>
+                        </div>
+                        <div class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left">
+                            <span class="text-4xl md:text-5xl flex-shrink-0">🅿️</span>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">Parking</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">20 Spots</p>
+                            </div>
+                        </div>
+                        <div class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left">
+                            <span class="text-4xl md:text-5xl flex-shrink-0">🔌</span>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">Outlets</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">Work Ready</p>
+                            </div>
+                        </div>
+                        <div class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left">
+                            <span class="text-4xl md:text-5xl flex-shrink-0">🐾</span>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">Pet Friendly</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">Welcome</p>
+                            </div>
+                        </div>
+                        <div class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left">
+                            <div class="w-10 h-10 md:w-16 md:h-16 flex items-center justify-center bg-white/5 rounded-xl p-2 flex-shrink-0">
+                                <img src="grab-logo-png_seeklogo-332942.png" alt="GrabFood" class="w-full h-auto object-contain" loading="lazy" width="64" height="64">
+                            </div>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">GrabFood</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">Order Online</p>
+                            </div>
+                        </div>
+                        <a href="tel:09171234567" class="feature-item flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-6 p-6 md:p-10 text-center md:text-left hover:bg-white/10 transition-all group">
+                            <span class="text-4xl md:text-5xl flex-shrink-0 group-hover:scale-110 transition-transform">📞</span>
+                            <div>
+                                <p class="font-semibold text-[11px] md:text-lg uppercase tracking-[0.2em]">Call Us</p>
+                                <p class="text-white/70 text-[10px] md:text-base font-medium mt-1">0917 123 4567</p>
+                                <p class="text-white/40 text-[9px] md:text-sm uppercase mt-1">Tap to dial</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="md:col-span-7 relative">
+                    <div id="map-container" class="h-96 md:h-[520px] rounded-3xl overflow-hidden shadow-2xl relative z-0"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="py-28 bg-white">
+        <div class="max-w-screen-2xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-6xl font-bold">Gallery</h2>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex justify-center mb-12">
+                <div class="flex gap-2 p-1.5 bg-zinc-100 rounded-3xl flex-wrap justify-center">
+                    <button id="tab-all" class="gallery-tab active-tab px-7 py-3 rounded-2xl text-sm font-semibold uppercase tracking-widest transition-all">All</button>
+                    <button id="tab-interior" class="gallery-tab px-7 py-3 rounded-2xl text-sm font-semibold uppercase tracking-widest transition-all">Interior</button>
+                    <button id="tab-exterior" class="gallery-tab px-7 py-3 rounded-2xl text-sm font-semibold uppercase tracking-widest transition-all">Exterior</button>
+                    <button id="tab-food" class="gallery-tab px-7 py-3 rounded-2xl text-sm font-semibold uppercase tracking-widest transition-all">Food & Drinks</button>
+                </div>
+            </div>
+
+            <!-- Grid -->
+           <div id="gallery-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+    <!-- INTERIOR (4 photos) -->
+    <div data-category="interior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="int1.jpg" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Cozy corner</p>
+        </div>
+    </div>
+    <div data-category="interior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="int2.jpg" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Perfect</p>
+        </div>
+    </div>
+    <div data-category="interior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="int3.jpg" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Inside KRĀV</p>
+        </div>
+    </div>
+    <div data-category="interior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="int 4.jpg" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Warm seating</p>
+        </div>
+    </div>
+
+    <!-- EXTERIOR (4 photos) -->
+    <div data-category="exterior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="front.jpg" alt="Exterior of KRĀV Cafe" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Front</p>
+        </div>
+    </div>
+    <div data-category="exterior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="drivetru.jpg" alt="Outside KRĀV Cafe" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Drive-thru</p>
+        </div>
+    </div>
+    <div data-category="exterior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="side.jpg" alt="KRĀV Cafe at night" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Side</p>
+        </div>
+    </div>
+    <div data-category="exterior" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="parking.jpg" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Parking Spot</p>
+        </div>
+    </div>
+
+    <!-- FOOD & DRINKS (4 photos) -->
+    <div data-category="food" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="651728019_122195992874489127_3498653628722874062_n.jpg" alt="Food at KRĀV Cafe" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Food</p>
+        </div>
+    </div>
+    <div data-category="food" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="672090592_122199628412489127_2693550450142691144_n.jpg" alt="Drinks at KRĀV Cafe" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Drinks</p>
+        </div>
+    </div>
+    <div data-category="food" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="677178777_122200492862489127_2851381876675902753_n.jpg" alt="Coffee at KRĀV Cafe" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Coffee</p>
+        </div>
+    </div>
+    <div data-category="food" class="gallery-item group relative overflow-hidden rounded-3xl aspect-square cursor-pointer">
+        <img src="680185936_122201196512489127_4954800110681773099_n.jpg" alt="Meal at KRĀV Cafe" class="gallery-img w-full h-full object-cover" loading="lazy" width="400" height="400">
+        <div class="gallery-overlay absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+            <p class="text-white text-lg gallery-caption">Meal</p>
+        </div>
+    </div>
+
+</div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="py-28 bg-white">
+        <div class="max-w-screen-2xl mx-auto px-6 text-center">
+            <h2 class="text-6xl font-bold mb-12">Follow Us</h2>
+            <div class="flex justify-center gap-20">
+                <a href="https://www.facebook.com/kravcafetanauan" target="_blank" rel="noopener noreferrer" class="social-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                </a>
+                <a href="https://www.instagram.com/kravcafetanauan" target="_blank" rel="noopener noreferrer" class="social-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </a>
+                <a href="https://www.tiktok.com/@kravcafetanauan" target="_blank" rel="noopener noreferrer" class="social-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-1.888V13.5a5.5 5.5 0 1 1-5.5-5.5c.345 0 .683.03 1.01.087v2.47a3.03 3.03 0 0 0-1.01-.172 3.1 3.1 0 1 0 3.1 3.1V2h2.41a4.8 4.8 0 0 0 4.76 4.686v2z"/>
+                    </svg>
+                </a>
+            </div>
+            <p class="mt-10 text-xl text-black/70">@kravcafetanauan</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black text-white py-20">
+        <div class="max-w-screen-2xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-x-3">
+                    <img src="1.png" alt="KRĀV Cafe Tanauan" class="h-12 w-auto" width="48" height="48">
+                </div>
+                <p class="text-zinc-500 text-sm tracking-widest uppercase text-center md:text-right">
+                    © 2026 KRĀV Cafe Tanauan<br>
+                    57 Brgy. Santor, Tanauan City, Batangas, Philippines
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Chat Button -->
+    <div id="chat-fab"
+         class="fixed bottom-6 right-6 bg-gradient-to-br from-black to-zinc-900 text-white w-14 h-14 md:w-16 md:h-16 rounded-3xl flex items-center justify-center shadow-2xl cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 text-3xl md:text-4xl z-[99999] border border-white/10">
+        ☕
+    </div>
+
+    <!-- Chat Window — chat-hidden keeps it closed on load -->
+    <div id="chat-window"
+         class="chat-hidden fixed inset-x-4 bottom-24 md:bottom-28 md:right-8 md:left-auto md:w-full md:max-w-md bg-white border border-black/10 rounded-3xl shadow-2xl flex flex-col h-[460px] md:h-[520px] overflow-hidden z-[99999]">
+
+        <div class="bg-gradient-to-r from-black to-zinc-900 text-white p-4 md:p-5 flex justify-between items-center rounded-t-3xl">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 md:w-10 md:h-10 bg-white/10 rounded-2xl flex items-center justify-center text-2xl">☕</div>
+                <div>
+                    <p class="font-semibold text-base md:text-lg">KRĀV AI Barista</p>
+                    <p class="text-xs text-white/60">Always ready to help</p>
+                </div>
+            </div>
+            <button id="chat-close-btn" class="text-3xl leading-none hover:text-white/70 transition-colors">×</button>
+        </div>
+
+        <div id="chat-messages"
+             class="flex-1 p-4 md:p-6 overflow-y-auto bg-zinc-50 space-y-5 scrollbar-thin">
+        </div>
+
+        <div class="p-4 md:p-5 border-t bg-white">
+            <div class="flex gap-3">
+                <input id="chat-input"
+                       class="flex-1 border border-black/30 focus:border-black rounded-3xl px-5 py-4 text-base focus:outline-none transition-all"
+                       placeholder="Ask about menu, hours...">
+                <button id="chat-send-btn"
+                        class="bg-black hover:bg-zinc-800 text-white w-12 h-12 md:w-14 md:h-14 rounded-3xl flex items-center justify-center text-2xl transition-all active:scale-95">
+                    ↑
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Lightbox -->
+    <div id="lightbox" class="hidden fixed inset-0 bg-black/90 z-[999999] items-center justify-center p-4">
+        <button id="lightbox-close" aria-label="Close" class="absolute top-6 right-6 text-white text-4xl leading-none hover:text-white/70 transition-colors">×</button>
+        <button id="lightbox-prev" aria-label="Previous image" class="absolute left-2 md:left-8 text-white text-4xl md:text-5xl hover:text-white/70 transition-colors px-2">‹</button>
+        <button id="lightbox-next" aria-label="Next image" class="absolute right-2 md:right-8 text-white text-4xl md:text-5xl hover:text-white/70 transition-colors px-2">›</button>
+        <div class="max-w-4xl w-full max-h-[85vh] flex flex-col items-center">
+            <img id="lightbox-img" src="" alt="" class="max-w-full max-h-[75vh] object-contain rounded-2xl">
+            <p id="lightbox-caption" class="text-white text-lg mt-4"></p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script src="script.js" defer></script>
+</body>
+</html>
