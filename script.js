@@ -337,7 +337,7 @@ addEventListener('load', () => ScrollTrigger.refresh());
     if (window.ScrollTrigger) ScrollTrigger.refresh();
   }));
   const close = () => { lb.hidden = true; };
-  rows.forEach(r => r.querySelector('.cert-view').addEventListener('click', e => {
+  document.querySelectorAll('.cert-view,.moment').forEach(b0 => b0.addEventListener('click', e => {
     const b = e.currentTarget; lb.querySelector('img').src = b.dataset.img; lb.querySelector('img').alt = b.dataset.cap; lb.querySelector('p').textContent = b.dataset.cap; lb.hidden = false;
   }));
   lb.addEventListener('click', close);
