@@ -1,0 +1,11 @@
+{
+  "name": "rain",
+  "private": true,
+  "version": "1.0.0",
+  "description": "RAIN showcase: Vercel serverless functions for the live weather proxy, map tiles, hazard lookups and the AI assistant.",
+  "dependencies": {},
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\"",
+    "vercel-build": "node scripts/bump-sw-version.js"
+  }
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>(function(){try{var t=localStorage.getItem("rain_theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Incident Reports — RAIN</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a1830">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+</head>
+<body>
+<div id="app-shell-root"></div>
+
+<template id="admin-incidents-content">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <div>
+      <span class="eyebrow">Resident Reports</span>
+      <h1 style="font-family:var(--font-display); font-weight:700; font-size:1.4rem; color:var(--canvas-heading); margin:.25rem 0 0;">Incident report queue</h1>
+    </div>
+    <div class="d-flex flex-wrap gap-2" id="incidentFilters">
+      <button class="btn-rain btn-rain-ghost btn-rain-sm active-filter" data-filter="all">All</button>
+      <button class="btn-rain btn-rain-ghost btn-rain-sm" data-filter="Pending">Pending</button>
+      <button class="btn-rain btn-rain-ghost btn-rain-sm" data-filter="Reviewed">Reviewed</button>
+      <button class="btn-rain btn-rain-ghost btn-rain-sm" data-filter="Resolved">Resolved</button>
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap align-items-end gap-2 mb-3" id="exportBar" style="font-size:.8rem;">
+    <label>View <select id="viewSel" class="form-select form-select-sm"><option value="active">Active</option><option value="archived">Archived (resolved/dismissed 30+ days)</option></select></label>
+    <label>From <input type="date" id="dFrom" class="form-control form-control-sm"></label>
+    <label>To <input type="date" id="dTo" class="form-control form-control-sm"></label>
+    <label>Category <select id="catSel" class="form-select form-select-sm"><option value="">All</option><option>Ashfall</option><option>Ground cracks</option><option>Gas smell</option><option>Flooding</option><option>Landslide</option><option>Earthquake damage</option><option>Other</option></select></label>
+    <label>Barangay <input type="search" id="brgyIn" class="form-control form-control-sm" placeholder="barangay name" maxlength="60"></label>
+    <button type="button" class="btn-rain btn-rain-ghost btn-rain-sm" id="exportCsv"><i class="bi bi-download"></i> Export CSV (current filters)</button>
+    <button type="button" class="btn-rain btn-rain-primary btn-rain-sm" id="exportXlsx"><i class="bi bi-file-earmark-excel"></i> Export Excel (.xlsx)</button>
+  </div>
+  <div class="d-flex flex-column gap-3" id="incidentsList"></div>
+  <div class="empty-state d-none" id="incidentsEmpty">
+    <div class="glyph"><i class="bi bi-inbox dicon" data-dicon="inbox"></i></div>
+    <div>No incident reports in this category yet.</div>
+  </div>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/animejs@4.5.0/lib/anime.iife.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="assets/js/animations.js"></script>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/demo-data.js"></script>
+<script src="assets/js/demo-seed.js"></script>
+  <script src="assets/js/demo-db.js"></script>
+<script src="assets/js/rain-auth.js"></script>
+<script src="assets/js/offline-store.js"></script>
+<script src="assets/js/main.js"></script>
+<script type="module">
+  await RainAuth.init();
+  const user = renderAppShell("admin-incidents.html", { title: "Incident Reports" });
+  if (user && !RainAuth.isAdmin(user)) { window.location.href = "dashboard.html"; }
+
+  const statusTone = { Pending: "status-warning", Reviewed: "status-caution", Resolved: "status-safe" };
+  const typeIcon = { Ashfall: "bi-cloud-haze2", "Ground cracks": "bi-layers", "Gas smell": "bi-wind", Flooding: "bi-water", Landslide: "bi-layers", "Earthquake damage": "bi-activity", Other: "bi-flag" };
+
+  // UI shows "Pending / Reviewed / Resolved"; the DB enum (see
+  // supabase/schema.sql) uses "pending / verified / resolved / dismissed".
+  const STATUS_DB_TO_UI = { pending: "Pending", verified: "Reviewed", resolved: "Resolved", dismissed: "Dismissed" };
+  const STATUS_UI_TO_DB = { Pending: "pending", Reviewed: "verified", Resolved: "resolved" };
+
+  function fmt(ts) {
+    if (!ts) return "—";
+    const d = new Date(ts);
+    return isNaN(d) ? ts : d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+
+  // Same fix as admin-users.html: PostgREST caps a single request at 1000
+  // rows, so a plain .select() would silently truncate once incidents
+  // passed that count, drifting from the dashboard's exact count() total.
+  // Page through until a short page tells us we've hit the end.
+  const FETCH_PAGE_SIZE = 1000;
+  async function fetchIncidents() {
+    const all = [];
+    let from = 0;
+    while (true) {
+      const { data, error } = await sb
+        .from("incidents")
+        .select("*, profiles(full_name)")
+        .order("created_at", { ascending: false })
+        .range(from, from + FETCH_PAGE_SIZE - 1);
+      if (error) { console.error("Fetch incidents error:", error); return all; }
+      all.push(...data);
+      if (data.length < FETCH_PAGE_SIZE) break;
+      from += FETCH_PAGE_SIZE;
+    }
+    // Assignee names: no FK on assigned_to (see supabase/008), so look the admins up separately.
+    const ids = [...new Set(all.map((x) => x.assigned_to).filter(Boolean))];
+    const names = {};
+    if (ids.length) { const { data: ps } = await sb.from("profiles").select("id, full_name").in("id", ids); (ps || []).forEach((p) => { names[p.id] = p.full_name; }); }
+    return all.map((inc) => ({
+      assigneeName: inc.assigned_to ? (names[inc.assigned_to] || "Administrator") : "",
+      id: inc.id,
+      type: inc.category,
+      description: inc.description,
+      location: inc.area,
+      reportedAt: inc.created_at,
+      reporterName: inc.profiles?.full_name || "Resident",
+      status: STATUS_DB_TO_UI[inc.status] || "Pending",
+      photoUrl: inc.photo_url,
+      archivedAt: inc.archived_at,
+      updatedAt: inc.updated_at,
+      barangay: inc.barangay || "",
+      assignedTo: inc.assigned_to || null,
+    }));
+  }
+
+  async function renderIncidents(filter) {
+    const list = document.getElementById("incidentsList");
+    const empty = document.getElementById("incidentsEmpty");
+    const all = await fetchIncidents();
+    const vSel = document.getElementById("viewSel"), dF = document.getElementById("dFrom"), dT = document.getElementById("dTo");
+    const t0 = dF && dF.value ? new Date(dF.value + "T00:00:00") : null, t1 = dT && dT.value ? new Date(dT.value + "T23:59:59.999") : null;
+    const wantArchived = vSel && vSel.value === "archived";
+    const catV = (document.getElementById("catSel") || {}).value || "", brV = ((document.getElementById("brgyIn") || {}).value || "").trim().toLowerCase();
+    const items = all.filter((i) => (filter === "all" || i.status === filter) && !!i.archivedAt === wantArchived
+      && (!catV || i.type === catV) && (!brV || String(i.barangay || "").toLowerCase().includes(brV) || String(i.location || "").toLowerCase().includes(brV))
+      && (!t0 || new Date(i.reportedAt) >= t0) && (!t1 || new Date(i.reportedAt) <= t1));
+    window.__shownIncidents = items;
+    list.innerHTML = "";
+    empty.classList.toggle("d-none", items.length > 0);
+
+    items.forEach((inc) => {
+      const el = document.createElement("div");
+      el.className = "rain-card reveal-on-scroll";
+      el.style.opacity = "1";
+      el.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="icon-chip tone-warning"><i class="bi ${typeIcon[inc.type] || "bi-flag"}"></i></span>
+            <div>
+              <strong>${inc.type || "Incident"}</strong>
+              <div class="cell-muted" style="font-size:.78rem;">Reported by ${inc.reporterName || "Resident"} · ${fmt(inc.reportedAt)}</div>
+            </div>
+          </div>
+          <span class="status-badge ${statusTone[inc.status] || "status-warning"}">${inc.status}</span>
+        </div>
+        <p style="font-size:.9rem; margin-bottom:.6rem;">${inc.description || "No description provided."}</p>
+        ${inc.photoUrl ? `<a href="${inc.photoUrl}" target="_blank" rel="noopener"><img src="${inc.photoUrl}" alt="Incident photo" style="max-width:220px; max-height:160px; border-radius:8px; object-fit:cover; margin-bottom:.6rem; display:block;"></a>` : ""}
+        <div class="data-source-line mb-3">
+          <i class="bi bi-geo-alt"></i> ${inc.barangay ? "Brgy. " + inc.barangay + " · " : ""}${inc.location || "Location not provided"}${inc.assigneeName ? " · Assigned to " + inc.assigneeName : ""}
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <button type="button" class="btn-rain btn-rain-ghost btn-rain-sm" data-status="Pending" data-id="${inc.id}">Mark Pending</button>
+          <button type="button" class="btn-rain btn-rain-ghost btn-rain-sm" data-status="Reviewed" data-id="${inc.id}">Mark Reviewed</button>
+          <button type="button" class="btn-rain btn-rain-primary btn-rain-sm" data-status="Resolved" data-id="${inc.id}">Mark Resolved</button>
+          <button type="button" class="btn-rain btn-rain-ghost btn-rain-sm" data-assign="${inc.id}">${inc.assignedTo ? "Reassign to me" : "Assign to me"}</button>
+        </div>`;
+      list.appendChild(el);
+    });
+  }
+
+  function initAdminIncidentsPage() {
+    document.getElementById("app-content").appendChild(document.getElementById("admin-incidents-content").content.cloneNode(true));
+    initializeAnimations();
+    renderIncidents("all");
+    const curFilter = () => document.querySelector("#incidentFilters .active-filter").dataset.filter;
+    ["viewSel", "dFrom", "dTo", "catSel"].forEach((id) => document.getElementById(id).addEventListener("change", () => renderIncidents(curFilter())));
+    document.getElementById("brgyIn").addEventListener("input", () => { clearTimeout(window.__brT); window.__brT = setTimeout(() => renderIncidents(curFilter()), 300); });
+    document.getElementById("exportCsv").addEventListener("click", () => {
+      // Spreadsheet formula injection guard: prefix cells starting with = + - @ (and tab/CR)
+      const cell = (v) => { v = v == null ? "" : String(v); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };
+      const rows = window.__shownIncidents || [];
+      const head = ["Incident ID", "Type", "Barangay", "Location", "Description", "Reported at", "Last modified", "Status", "Assigned to", "Reporter", "Archived at", "Photo URL"];
+      const csv = [head.map(cell).join(",")].concat(rows.map((i) => [i.id, i.type, i.barangay, i.location, i.description, i.reportedAt, i.updatedAt || "", i.status, i.assigneeName, i.reporterName, i.archivedAt || "", i.photoUrl || ""].map(cell).join(","))).join("\r\n");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }));
+      a.download = "rain-incidents-" + new Date().toISOString().slice(0, 10) + ".csv";
+      a.click(); URL.revokeObjectURL(a.href);
+    });
+
+    document.getElementById("exportXlsx").addEventListener("click", () => {
+      if (typeof XLSX === "undefined") { rainToast("Excel library failed to load; use CSV instead", "bi-exclamation-triangle"); return; }
+      const safe = (v) => { v = v == null ? "" : String(v); return /^[=+\-@\t\r]/.test(v) ? "'" + v : v; };
+      const rows = window.__shownIncidents || [];
+      if (!rows.length) { rainToast("Nothing to export for the current filters", "bi-info-circle"); return; }
+      const head = ["Incident ID", "Type", "Barangay", "Location", "Description", "Reported at", "Last modified", "Status", "Assigned to", "Reporter", "Archived at", "Photo URL"];
+      const aoa = [head].concat(rows.map((i) => [i.id, i.type, i.barangay, i.location, i.description, i.reportedAt, i.updatedAt || "", i.status, i.assigneeName, i.reporterName, i.archivedAt || "", i.photoUrl || ""].map(safe)));
+      const filt = [["Exported at", new Date().toISOString()], ["View", document.getElementById("viewSel").value], ["From", document.getElementById("dFrom").value || "any"], ["To", document.getElementById("dTo").value || "any"],
+        ["Category", document.getElementById("catSel").value || "all"], ["Barangay text", document.getElementById("brgyIn").value || "any"], ["Status filter", document.querySelector("#incidentFilters .active-filter").dataset.filter], ["Rows", rows.length]];
+      const wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [{ wch: 38 }, { wch: 18 }, { wch: 20 }, { wch: 30 }, { wch: 60 }, { wch: 24 }, { wch: 24 }, { wch: 12 }, { wch: 22 }, { wch: 22 }, { wch: 24 }, { wch: 40 }];
+      XLSX.utils.book_append_sheet(wb, ws, "Incidents");
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(filt), "Filters used");
+      XLSX.writeFile(wb, "rain-incidents-" + new Date().toISOString().slice(0, 10) + ".xlsx");
+    });
+
+    document.querySelectorAll("#incidentFilters button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#incidentFilters button").forEach((b) => b.classList.remove("active-filter"));
+        btn.classList.add("active-filter");
+        renderIncidents(btn.dataset.filter);
+      });
+    });
+
+    document.getElementById("incidentsList").addEventListener("click", async (e) => {
+      const asg = e.target.closest("[data-assign]");
+      if (asg) {
+        const { data: au } = await sb.auth.getUser();
+        if (!au || !au.user) { rainToast("Sign in again to assign", "bi-exclamation-triangle"); return; }
+        const { error: ae } = await sb.from("incidents").update({ assigned_to: au.user.id }).eq("id", asg.dataset.assign);
+        if (ae) { console.error("Assign error:", ae); rainToast("Could not assign", "bi-exclamation-triangle"); return; }
+        renderIncidents(document.querySelector("#incidentFilters .active-filter").dataset.filter);
+        rainToast("Assigned to you", "bi-check-circle");
+        return;
+      }
+      const btn = e.target.closest("[data-status]");
+      if (!btn) return;
+      const dbStatus = STATUS_UI_TO_DB[btn.dataset.status];
+      const { error } = await sb.from("incidents").update({ status: dbStatus }).eq("id", btn.dataset.id);
+      if (error) { console.error("Update incident error:", error); rainToast("Could not update status", "bi-exclamation-triangle"); return; }
+      const activeFilter = document.querySelector("#incidentFilters .active-filter").dataset.filter;
+      renderIncidents(activeFilter);
+      rainToast("Report marked " + btn.dataset.status, "bi-check-circle");
+    });
+  }
+
+  if (user && RainAuth.isAdmin(user)) initAdminIncidentsPage();
+</script>
+<style>.active-filter{background:var(--navy-950); color:#fff; border-color:var(--navy-950);}</style>
+</body>
+</html>

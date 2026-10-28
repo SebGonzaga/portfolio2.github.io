@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>NEXUS AI — Visualize Intelligence</title>
+<meta name="description" content="NEXUS AI — an interactive neural network visualization laboratory. Watch a prompt travel through a living network before an AI response is generated." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   NEXUS AI — style.css + neural.css + animations.css + responsive.css
+   (merged into one sheet for single-file delivery — see README for the
+   suggested split if you break this back out into a multi-file project)
+   ========================================================================== */
+
+:root{
+  --background:#030712;
+  --surface:#0b1120;
+  --surface-light:#111827;
+  --surface-glass: rgba(17, 24, 39, 0.55);
+  --border: rgba(148, 163, 184, 0.14);
+  --border-strong: rgba(148, 163, 184, 0.28);
+  --primary:#38bdf8;
+  --secondary:#818cf8;
+  --accent:#22d3ee;
+  --success:#34d399;
+  --warning:#fbbf24;
+  --danger:#fb7185;
+  --text:#f8fafc;
+  --text-dim:#c7d2e0;
+  --muted:#64748b;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  --nav-w: 220px;
+  --telemetry-w: 300px;
+  --header-h: 56px;
+  --input-h: 78px;
+
+  --shadow-glow: 0 0 24px rgba(56, 189, 248, 0.15);
+  --ease-standard: cubic-bezier(.22,.9,.28,1);
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+
+html, body{
+  height: 100%;
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+body{
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(56,189,248,0.06), transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(129,140,248,0.06), transparent 45%);
+}
+
+::selection{ background: var(--primary); color: #001018; }
+
+a{ color: inherit; }
+
+button{
+  font-family: inherit;
+  cursor: pointer;
+  color: inherit;
+  background: none;
+  border: none;
+}
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible,
+.node-hit:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+input{ font-family: inherit; color: inherit; }
+
+.visually-hidden{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+.mono{ font-family: var(--font-mono); }
+
+/* subtle scanline + grid ambience */
+.grid-overlay{
+  position: fixed; inset: 0; pointer-events: none; z-index: 1;
+  background-image:
+    linear-gradient(to right, rgba(148,163,184,0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148,163,184,0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 78%);
+}
+.scanline{
+  position: fixed; inset: 0; pointer-events:none; z-index: 2; opacity: 0.025;
+  background: repeating-linear-gradient(to bottom, #fff 0px, #fff 1px, transparent 1px, transparent 3px);
+}
+
+/* ==========================================================================
+   BOOT SEQUENCE
+   ========================================================================== */
+#boot{
+  position: fixed; inset: 0; z-index: 100;
+  background: #010308;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+#boot canvas{ position:absolute; inset:0; width:100%; height:100%; }
+.boot-content{
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 28px;
+  padding: 24px;
+}
+.boot-logo{
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  opacity: 0;
+  text-shadow: 0 0 30px rgba(56,189,248,0.5);
+}
+.boot-logo span{ color: var(--primary); }
+.boot-tagline{
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0;
+}
+.boot-log{
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  min-height: 148px;
+  width: min(420px, 84vw);
+}
+.boot-log div{
+  opacity: 0;
+  display:flex; justify-content: space-between; gap: 12px;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(148,163,184,0.08);
+}
+.boot-log .ok{ color: var(--success); }
+.boot-status{
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.22em;
+  color: var(--accent); opacity: 0; text-transform: uppercase;
+}
+.skip-boot{
+  position: absolute; bottom: 26px; right: 26px; z-index: 3;
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
+  color: var(--muted); border: 1px solid var(--border); padding: 8px 14px;
+  border-radius: var(--radius-md); text-transform: uppercase;
+  transition: color .2s, border-color .2s;
+}
+.skip-boot:hover{ color: var(--accent); border-color: var(--accent); }
+
+/* ==========================================================================
+   APP SHELL
+   ========================================================================== */
+#app{
+  height: 100%;
+  display: grid;
+  grid-template-columns: var(--nav-w) 1fr var(--telemetry-w);
+  grid-template-rows: var(--header-h) 1fr var(--input-h);
+  grid-template-areas:
+    "header header header"
+    "nav    main    telem"
+    "nav    inputbar telem";
+  opacity: 0;
+}
+
+/* ---- Header ---- */
+#app-header{
+  grid-area: header;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(3,7,18,0.7);
+  backdrop-filter: blur(10px);
+  z-index: 20;
+}
+.brand{
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 700; letter-spacing: 0.14em; font-size: 0.95rem;
+}
+.brand-mark{
+  width: 20px; height: 20px; position: relative;
+  display:inline-block;
+}
+.brand-mark svg{ width:100%; height:100%; }
+.header-right{ display:flex; align-items:center; gap: 18px; }
+.status-pill{
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+  color: var(--text-dim); text-transform: uppercase;
+}
+.status-dot{
+  width: 7px; height: 7px; border-radius: 50%; background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+.status-dot.warn{ background: var(--warning); box-shadow:0 0 8px var(--warning); }
+.icon-btn{
+  width: 32px; height: 32px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); color: var(--text-dim);
+  transition: border-color .2s, color .2s, background .2s;
+}
+.icon-btn:hover{ border-color: var(--border-strong); color: var(--text); background: rgba(255,255,255,0.03); }
+.icon-btn[aria-pressed="true"]{ color: var(--accent); border-color: var(--accent); }
+.icon-btn svg{ width: 16px; height: 16px; }
+
+/* ---- Nav ---- */
+#nav{
+  grid-area: nav;
+  border-right: 1px solid var(--border);
+  padding: 18px 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  overflow-y: auto;
+}
+.nav-label{
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.2em;
+  color: var(--muted); text-transform: uppercase; padding: 6px 10px 10px;
+}
+.nav-item{
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-md);
+  font-size: 0.84rem; color: var(--text-dim);
+  border: 1px solid transparent;
+  text-align:left; width: 100%;
+}
+.nav-item svg{ width:15px; height:15px; flex-shrink:0; opacity: .8; }
+.nav-item:hover{ background: rgba(255,255,255,0.03); color: var(--text); }
+.nav-item[aria-current="page"]{
+  background: linear-gradient(90deg, rgba(56,189,248,0.12), rgba(56,189,248,0.02));
+  border-color: rgba(56,189,248,0.25);
+  color: var(--text);
+}
+.nav-item[aria-current="page"] .dot{ background: var(--primary); box-shadow: 0 0 6px var(--primary); }
+.nav-item .dot{ width:5px; height:5px; border-radius:50%; background: var(--muted); margin-left: auto; }
+
+.nav-modes{ margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); }
+.mode-select{
+  width: 100%; background: var(--surface-light); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--font-mono); font-size: 0.72rem;
+  padding: 8px 10px; border-radius: var(--radius-md); letter-spacing: 0.04em;
+}
+
+/* ---- Main / neural stage ---- */
+#main{
+  grid-area: main;
+  position: relative;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.view{
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+}
+.view.active{ opacity: 1; pointer-events: auto; }
+
+.stage-header{
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px 0;
+}
+.stage-title{
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.24em;
+  color: var(--muted); text-transform: uppercase;
+}
+.stage-substatus{
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent);
+  letter-spacing: 0.06em; min-height: 1em;
+}
+
+.network-wrap{
+  flex: 1; position: relative; min-height: 0;
+}
+#neural-svg{ width: 100%; height: 100%; display:block; }
+.nn-node{ cursor: pointer; }
+.nn-node circle.core{ transition: filter .15s; }
+.nn-node:hover circle.core{ filter: brightness(1.4); }
+.nn-link{ pointer-events: none; }
+
+#node-tooltip{
+  position: absolute; z-index: 12; pointer-events: none;
+  background: var(--surface-glass); backdrop-filter: blur(10px);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+  padding: 10px 12px; font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--text-dim); min-width: 170px; opacity: 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+#node-tooltip h4{
+  margin: 0 0 6px; font-size: 0.68rem; letter-spacing: 0.14em;
+  color: var(--accent); text-transform: uppercase;
+}
+#node-tooltip .row{ display:flex; justify-content: space-between; padding: 1px 0; }
+
+.stage-activity{
+  padding: 10px 20px 16px; display: flex; align-items: center; gap: 14px;
+}
+.activity-label{
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.16em;
+  color: var(--muted); text-transform: uppercase; white-space: nowrap;
+}
+.activity-bars{
+  display: flex; align-items: flex-end; gap: 3px; height: 26px; flex: 1;
+  max-width: 340px;
+}
+.activity-bars i{
+  display:block; width: 4px; border-radius: 2px;
+  background: linear-gradient(to top, var(--primary), var(--accent));
+  height: 10%;
+  opacity: .55;
+}
+
+/* ---- Chat view ---- */
+#view-chat{ flex-direction: column; }
+.chat-scroll{
+  flex: 1; overflow-y: auto; padding: 18px 22px; display:flex; flex-direction:column; gap: 14px;
+}
+.msg{ max-width: 74%; display:flex; flex-direction:column; gap:6px; opacity: 0; }
+.msg.user{ align-self: flex-end; align-items: flex-end; }
+.msg.ai{ align-self: flex-start; }
+.msg-meta{
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em;
+  color: var(--muted); text-transform: uppercase;
+}
+.msg-bubble{
+  padding: 12px 14px; border-radius: var(--radius-lg); line-height: 1.55;
+  font-size: 0.92rem; border: 1px solid var(--border);
+}
+.msg.user .msg-bubble{
+  background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(129,140,248,0.1));
+  border-color: rgba(56,189,248,0.3);
+  border-bottom-right-radius: 4px;
+}
+.msg.ai .msg-bubble{
+  background: var(--surface-light);
+  border-bottom-left-radius: 4px;
+}
+.msg-actions{ display:flex; gap: 6px; }
+.chip-btn{
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em;
+  color: var(--muted); border: 1px solid var(--border); padding: 4px 8px;
+  border-radius: 999px; text-transform: uppercase;
+  transition: color .2s, border-color .2s;
+}
+.chip-btn:hover{ color: var(--accent); border-color: var(--accent); }
+.token-track{
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 22px 2px;
+}
+.token-chip{
+  font-family: var(--font-mono); font-size: 0.68rem; padding: 3px 8px;
+  border: 1px solid rgba(56,189,248,0.35); border-radius: 999px;
+  color: var(--primary); background: rgba(56,189,248,0.06); opacity: 0;
+}
+.cursor-blink::after{
+  content:'▍'; color: var(--accent); animation: blink 1s steps(1) infinite;
+}
+@keyframes blink{ 50%{ opacity: 0; } }
+
+/* ---- Input bar ---- */
+#inputbar{
+  grid-area: inputbar;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.input-shell{
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  background: var(--surface-light); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 8px 8px 8px 16px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.input-shell:focus-within{ border-color: var(--primary); box-shadow: 0 0 0 3px rgba(56,189,248,0.12); }
+.input-shell .prefix{ color: var(--muted); font-family: var(--font-mono); font-size: 0.78rem; }
+#prompt-input{
+  flex: 1; background: transparent; border: none; outline: none;
+  font-size: 0.92rem; padding: 8px 0;
+}
+#prompt-input::placeholder{ color: var(--muted); }
+#send-btn{
+  width: 40px; height: 40px; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  color: #041018; flex-shrink: 0;
+  transition: transform .15s var(--ease-standard), opacity .2s;
+}
+#send-btn:hover{ transform: translateY(-1px); }
+#send-btn:disabled{ opacity: 0.4; cursor: not-allowed; transform:none; }
+#send-btn svg{ width: 17px; height: 17px; }
+#stop-btn{
+  width:40px; height:40px; border-radius: var(--radius-md);
+  border: 1px solid var(--danger); color: var(--danger); display:none;
+  align-items:center; justify-content:center; flex-shrink:0;
+}
+#stop-btn.active{ display:flex; }
+
+/* ---- Telemetry panel ---- */
+#telemetry{
+  grid-area: telem;
+  border-left: 1px solid var(--border);
+  padding: 16px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.panel{
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: rgba(17,24,39,0.4); padding: 14px;
+}
+.panel h3{
+  margin: 0 0 12px; font-family: var(--font-mono); font-size: 0.66rem;
+  letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase;
+  display:flex; align-items:center; gap: 8px;
+}
+.panel h3::before{
+  content:''; width: 5px; height: 5px; background: var(--accent); border-radius:1px;
+  box-shadow: 0 0 6px var(--accent);
+}
+.metric-row{
+  display:flex; justify-content: space-between; align-items:baseline;
+  padding: 6px 0; border-bottom: 1px dashed var(--border);
+  font-family: var(--font-mono); font-size: 0.76rem;
+}
+.metric-row:last-child{ border-bottom:none; }
+.metric-row .k{ color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-size: .68rem;}
+.metric-row .v{ color: var(--text); font-weight: 600; }
+.bar-track{
+  height: 5px; border-radius: 3px; background: rgba(148,163,184,0.12);
+  overflow: hidden; margin-top: 4px;
+}
+.bar-fill{
+  height:100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  width: 10%;
+}
+.disclaimer{
+  font-size: 0.64rem; color: var(--muted); line-height:1.5; margin-top: 10px;
+  padding-top: 10px; border-top: 1px dashed var(--border);
+}
+
+.memory-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+.memory-list li{
+  display:flex; align-items:center; gap:8px;
+  font-size: 0.78rem; color: var(--text-dim);
+  background: var(--surface-light); border: 1px solid var(--border);
+  padding: 7px 9px; border-radius: var(--radius-md);
+}
+.memory-list li button{ margin-left:auto; color: var(--muted); flex-shrink:0; }
+.memory-list li button:hover{ color: var(--danger); }
+.memory-add{ display:flex; gap:6px; margin-top:8px; }
+.memory-add input{
+  flex:1; background: var(--surface-light); border:1px solid var(--border);
+  border-radius: var(--radius-md); padding: 7px 9px; font-size:0.78rem; color: var(--text);
+}
+.memory-add button{
+  background: var(--surface-light); border:1px solid var(--border); border-radius: var(--radius-md);
+  padding: 0 10px; color: var(--accent);
+}
+
+/* ---- Overview / Dashboard view ---- */
+.dash-grid{
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap: 14px; padding: 20px 22px;
+}
+.dash-card{
+  border:1px solid var(--border); border-radius: var(--radius-lg);
+  background: rgba(17,24,39,0.4); padding: 16px;
+}
+.dash-card .label{
+  font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: .16em;
+  color: var(--muted); text-transform: uppercase;
+}
+.dash-card .value{
+  font-size: 1.9rem; font-weight: 700; margin-top: 6px; letter-spacing: -0.01em;
+}
+.overview-copy{ padding: 0 22px; color: var(--text-dim); font-size: 0.88rem; line-height:1.7; max-width: 640px; }
+.overview-copy h2{ font-size: 1.3rem; margin-bottom: 8px; }
+
+/* ---- Memory view / Data view ---- */
+.scroll-view{ padding: 20px 22px; overflow-y:auto; flex:1; }
+
+/* ---- Conversation sidebar (within nav on click) ---- */
+.history-block{ margin-top: 6px; }
+.history-day{ font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: .16em; color: var(--muted); padding: 10px 10px 4px; text-transform: uppercase; }
+.history-item{
+  padding: 7px 10px; border-radius: var(--radius-md); font-size: 0.78rem;
+  color: var(--text-dim); width:100%; text-align:left;
+}
+.history-item:hover{ background: rgba(255,255,255,0.03); color: var(--text); }
+
+/* ==========================================================================
+   Canvas particle background (fixed, behind everything in #app)
+   ========================================================================== */
+#bg-canvas{ position: fixed; inset:0; z-index:0; pointer-events:none; }
+
+/* ==========================================================================
+   Diagnostic mode overlay
+   ========================================================================== */
+.diagnostic-readout{
+  position:absolute; top: 10px; left: 12px; font-family: var(--font-mono);
+  font-size: 0.62rem; color: var(--success); line-height:1.6; opacity:0;
+  pointer-events:none; text-shadow: 0 0 6px rgba(52,211,153,0.5);
+}
+
+/* ==========================================================================
+   Toasts / connection error
+   ========================================================================== */
+#toast-region{ position: fixed; bottom: 96px; right: 22px; z-index: 60; display:flex; flex-direction:column; gap:8px; }
+.toast{
+  background: var(--surface-glass); backdrop-filter: blur(10px);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-md);
+  padding: 10px 14px; font-size: 0.78rem; color: var(--text-dim);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35); max-width: 280px;
+}
+
+#error-panel{
+  position: fixed; inset:0; z-index: 70; display:none;
+  align-items:center; justify-content:center;
+  background: rgba(3,7,18,0.75); backdrop-filter: blur(6px);
+}
+#error-panel.active{ display:flex; }
+.error-card{
+  width: min(380px, 88vw); border: 1px solid var(--danger); border-radius: var(--radius-lg);
+  background: var(--surface); padding: 24px; text-align:center;
+}
+.error-card h2{ color: var(--danger); font-size: 1rem; letter-spacing: .08em; margin: 0 0 10px; }
+.error-card p{ color: var(--text-dim); font-size: 0.84rem; line-height:1.6; margin-bottom: 18px; }
+.error-actions{ display:flex; gap: 10px; justify-content:center; flex-wrap: wrap; }
+.btn{
+  padding: 9px 16px; border-radius: var(--radius-md); font-size: 0.78rem;
+  letter-spacing: .04em; border: 1px solid var(--border-strong);
+}
+.btn.primary{ background: var(--primary); color:#041018; border-color: var(--primary); }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 1100px){
+  :root{ --telemetry-w: 260px; --nav-w: 190px; }
+}
+
+@media (max-width: 880px){
+  #app{
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--header-h) 1fr var(--input-h) 56px;
+    grid-template-areas:
+      "header"
+      "main"
+      "inputbar"
+      "navbar";
+  }
+  #nav{
+    grid-area: navbar; flex-direction: row; align-items:center; gap: 2px;
+    border-right:none; border-top: 1px solid var(--border);
+    padding: 6px 8px; overflow-x:auto; overflow-y:hidden;
+  }
+  .nav-label, .nav-modes{ display:none; }
+  .nav-item{ flex-direction: column; gap: 3px; font-size: 0.62rem; padding: 6px 10px; white-space:nowrap; }
+  .nav-item .dot{ display:none; }
+  #telemetry{
+    position: fixed; right: 0; top: var(--header-h); bottom: 56px;
+    width: min(300px, 82vw); transform: translateX(100%);
+    transition: transform .3s var(--ease-standard); background: var(--background);
+    z-index: 40; box-shadow: -12px 0 30px rgba(0,0,0,0.4);
+  }
+  #telemetry.open{ transform: translateX(0); }
+  #inputbar{ border-right:none; }
+  .msg{ max-width: 88%; }
+}
+
+@media (max-width: 520px){
+  .brand span.full{ display:none; }
+  .header-right{ gap: 10px; }
+  .stage-activity{ display:none; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+body.reduced-motion .nn-particle{ display:none; }
+</style>
+</head>
+<body>
+
+<div class="grid-overlay" aria-hidden="true"></div>
+<div class="scanline" aria-hidden="true"></div>
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<!-- ======================= BOOT SEQUENCE ======================= -->
+<section id="boot" role="status" aria-live="polite" aria-label="System boot sequence">
+  <canvas id="boot-canvas" aria-hidden="true"></canvas>
+  <div class="boot-content">
+    <div class="boot-logo" id="boot-logo">NEXUS <span>AI</span></div>
+    <div class="boot-tagline" id="boot-tagline">Visualize intelligence.</div>
+    <div class="boot-log mono" id="boot-log">
+      <div data-line>INITIALIZING NEURAL CORE...</div>
+      <div data-line>Neural Engine <span class="ok">✓</span></div>
+      <div data-line>Language Model <span class="ok">✓</span></div>
+      <div data-line>Memory System <span class="ok">✓</span></div>
+      <div data-line>Context Processor <span class="ok">✓</span></div>
+      <div data-line>Response Engine <span class="ok">✓</span></div>
+    </div>
+    <div class="boot-status mono" id="boot-status">SYSTEM ONLINE</div>
+  </div>
+  <button class="skip-boot" id="skip-boot">Skip ⏵</button>
+</section>
+
+<!-- ======================= APP SHELL ======================= -->
+<div id="app">
+
+  <header id="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="4" r="2" fill="#38bdf8"/><circle cx="4" cy="14" r="2" fill="#818cf8"/><circle cx="20" cy="14" r="2" fill="#818cf8"/><circle cx="12" cy="21" r="2" fill="#22d3ee"/><path d="M12 6l-7 7M12 6l7 7M6 15h12M12 16v3" stroke="#38bdf8" stroke-width="1" opacity="0.6"/></svg>
+      </span>
+      <span>NEXUS <span class="full">AI</span></span>
+    </div>
+    <div class="header-right">
+      <div class="status-pill"><span class="status-dot" id="status-dot"></span><span id="status-text">Neural Core · Online</span></div>
+      <button class="icon-btn" id="sound-toggle" aria-pressed="false" aria-label="Toggle interface sound">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path id="sound-wave" d="M17 8a5 5 0 010 8" opacity="0.4"/></svg>
+      </button>
+      <button class="icon-btn" id="telemetry-toggle" aria-pressed="false" aria-label="Toggle telemetry panel" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V10M12 19V5M20 19v-7"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav id="nav" aria-label="Primary">
+    <div class="nav-label">System</div>
+    <button class="nav-item" data-view="overview" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Overview</span><span class="dot"></span></button>
+    <button class="nav-item" data-view="neural"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h10M12 7v10"/></svg><span>Neural</span><span class="dot"></span></button>
+    <button class="nav-item" data-view="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v11H8l-4 4V5z"/></svg><span>Chat</span><span class="dot"></span></button>
+    <button class="nav-item" data-view="memory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3a5 5 0 015 5c0 2-1 3-2 4l-1 2H10l-1-2c-1-1-2-2-2-4a5 5 0 015-5z"/><path d="M10 20h4"/></svg><span>Memory</span><span class="dot"></span></button>
+    <button class="nav-item" data-view="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><span>Data</span><span class="dot"></span></button>
+
+    <div class="nav-modes">
+      <label for="mode-select" class="nav-label" style="padding-left:0;">Network Mode</label>
+      <select id="mode-select" class="mode-select">
+        <option value="normal">Normal</option>
+        <option value="high">High Activity</option>
+        <option value="deep">Deep Analysis</option>
+        <option value="idle">Idle</option>
+        <option value="diagnostic">Diagnostic</option>
+      </select>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- OVERVIEW -->
+    <section class="view" id="view-overview" data-view-panel="overview">
+      <div class="stage-header"><span class="stage-title">System Overview</span></div>
+      <div class="overview-copy">
+        <h2>Neural Intelligence System</h2>
+        <p>NEXUS renders every prompt as a physical journey — tokenized, carried through simulated layers, and reassembled as a response. The dashboard below tracks the session; the Neural tab shows the network live.</p>
+      </div>
+      <div class="dash-grid" id="dash-grid">
+        <div class="dash-card"><div class="label">Total Requests</div><div class="value" data-counter="12842">0</div></div>
+        <div class="dash-card"><div class="label">Tokens Processed</div><div class="value" data-counter="1284213" data-suffix="">0</div></div>
+        <div class="dash-card"><div class="label">Avg Response</div><div class="value"><span data-counter-decimal="1.82">0</span>s</div></div>
+        <div class="dash-card"><div class="label">Network Activity</div><div class="value"><span data-counter="87">0</span>%</div></div>
+      </div>
+    </section>
+
+    <!-- NEURAL (full visualization, same svg as chat but focused) -->
+    <section class="view" id="view-neural" data-view-panel="neural">
+      <div class="stage-header">
+        <span class="stage-title" id="neural-stage-title">Neural Network · Idle</span>
+        <span class="stage-substatus" id="neural-substatus"></span>
+      </div>
+      <div class="network-wrap" id="network-wrap-main">
+        <svg id="neural-svg" viewBox="0 0 900 460" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Live neural network visualization"></svg>
+        <div id="node-tooltip" role="tooltip"></div>
+        <div class="diagnostic-readout mono" id="diagnostic-readout"></div>
+      </div>
+      <div class="stage-activity">
+        <span class="activity-label">Neural Activity</span>
+        <div class="activity-bars" id="activity-bars-main"></div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="view active" id="view-chat" data-view-panel="chat">
+      <div class="stage-header">
+        <span class="stage-title" id="chat-stage-title">Neural Network · Idle</span>
+        <span class="stage-substatus" id="chat-substatus"></span>
+      </div>
+      <div class="network-wrap" style="flex: 0 0 42%; min-height: 180px;">
+        <svg id="neural-svg-chat" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Live neural network visualization"></svg>
+      </div>
+      <div class="token-track" id="token-track" aria-live="polite"></div>
+      <div class="chat-scroll" id="chat-scroll" aria-live="polite"></div>
+    </section>
+
+    <!-- MEMORY -->
+    <section class="view" id="view-memory" data-view-panel="memory">
+      <div class="stage-header"><span class="stage-title">Memory System</span></div>
+      <div class="scroll-view">
+        <div class="panel" style="max-width:520px;">
+          <h3>Recent Context</h3>
+          <ul class="memory-list" id="memory-list-full"></ul>
+          <div class="memory-add">
+            <label for="memory-input-full" class="visually-hidden">Add a memory entry</label>
+            <input id="memory-input-full" type="text" placeholder="Add to memory…" />
+            <button id="memory-add-full" aria-label="Add memory entry">＋</button>
+          </div>
+          <p class="disclaimer">This is local application memory, stored in your browser's localStorage. It is not a persistent memory feature of any real AI model.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA -->
+    <section class="view" id="view-data" data-view-panel="data">
+      <div class="stage-header"><span class="stage-title">Session Data</span></div>
+      <div class="scroll-view">
+        <div class="panel" style="max-width:520px; margin-bottom:16px;">
+          <h3>Conversations</h3>
+          <div id="history-full"></div>
+        </div>
+        <div class="panel" style="max-width:520px;">
+          <h3>Session Controls</h3>
+          <div class="metric-row"><span class="k">Stored Conversations</span><span class="v" id="data-conv-count">0</span></div>
+          <div class="metric-row"><span class="k">Memory Entries</span><span class="v" id="data-mem-count">0</span></div>
+          <div style="display:flex; gap:8px; margin-top:12px;">
+            <button class="btn" id="export-data">Export JSON</button>
+            <button class="btn" id="clear-data" style="border-color: var(--danger); color: var(--danger);">Clear All</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="inputbar">
+    <div class="input-shell">
+      <span class="prefix mono">&gt;</span>
+      <label for="prompt-input" class="visually-hidden">Ask NEXUS anything</label>
+      <input id="prompt-input" type="text" placeholder="Ask NEXUS anything..." autocomplete="off" />
+    </div>
+    <button id="stop-btn" aria-label="Stop generation" title="Stop generation">
+      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+    </button>
+    <button id="send-btn" aria-label="Send message">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+
+  <aside id="telemetry" aria-label="Neural core telemetry">
+    <div class="panel">
+      <h3>Neural Core</h3>
+      <div class="metric-row"><span class="k">Status</span><span class="v" id="tel-status">Online</span></div>
+      <div class="metric-row"><span class="k">Processing</span><span class="v" id="tel-processing">4%</span></div>
+      <div class="bar-track"><div class="bar-fill" id="tel-processing-bar"></div></div>
+      <div class="metric-row"><span class="k">Tokens</span><span class="v" id="tel-tokens">0</span></div>
+      <div class="metric-row"><span class="k">Context</span><span class="v" id="tel-context">Idle</span></div>
+      <div class="metric-row"><span class="k">Memory</span><span class="v" id="tel-memory">18%</span></div>
+      <div class="bar-track"><div class="bar-fill" id="tel-memory-bar"></div></div>
+      <div class="metric-row"><span class="k">Latency</span><span class="v" id="tel-latency">—</span></div>
+      <p class="disclaimer">Values are simulated visual telemetry, not real model internals.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Memory</h3>
+      <ul class="memory-list" id="memory-list"></ul>
+      <div class="memory-add">
+        <label for="memory-input" class="visually-hidden">Add a memory entry</label>
+        <input id="memory-input" type="text" placeholder="Add note…" />
+        <button id="memory-add-btn" aria-label="Add memory entry">＋</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Conversations</h3>
+      <div id="history-list"></div>
+      <div style="margin-top:10px;">
+        <button class="btn" id="new-convo" style="width:100%;">New Conversation</button>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<div id="toast-region" aria-live="polite"></div>
+
+<div id="error-panel" role="alertdialog" aria-labelledby="error-title">
+  <div class="error-card">
+    <h2 id="error-title">NEXUS CONNECTION ERROR</h2>
+    <p id="error-body">Unable to reach the neural service.</p>
+    <div class="error-actions">
+      <button class="btn primary" id="error-retry">Retry</button>
+      <button class="btn" id="error-demo">Use Demo Mode</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+/* ==========================================================================
+   NEXUS AI — application logic
+   Sections below correspond to the intended multi-file split:
+     ai.js · neural-network.js · particles.js · chat.js · memory.js ·
+     storage.js · ui.js · main.js
+   They're merged here for single-file delivery. See README.
+   ========================================================================== */
+
+import { animate, createTimeline, stagger, utils } from 'https://esm.sh/animejs@4.5.0';
+
+/* -------------------------------- storage.js -------------------------------- */
+const Storage = {
+  get(key, fallback){
+    try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch(e){ return fallback; }
+  },
+  set(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); return true; }
+    catch(e){ return false; }
+  }
+};
+
+const MEMORY_KEY = 'nexus.memory.v1';
+const HISTORY_KEY = 'nexus.history.v1';
+const SOUND_KEY = 'nexus.sound.v1';
+
+/* -------------------------------- ai.js -------------------------------- */
+/**
+ * AI provider abstraction. Swap DEMO_MODE / callAI to point at a real backend.
+ * NEVER put a production secret key in this frontend file — route real
+ * requests through your own backend endpoint instead. See README §"AI API".
+ */
+const AI_API_URL = ""; // e.g. "/api/nexus" — a backend route you control
+const DEMO_MODE = true; // flips to false automatically if AI_API_URL is set and reachable
+
+const DEMO_RESPONSES = [
+  {
+    match: /artificial intelligence|what is ai\b/i,
+    text: "Artificial intelligence describes computer systems built to perform tasks that normally need human cognition — recognizing patterns, making predictions, and generating language. Modern systems, including large language models, learn these abilities from vast amounts of example data rather than following hand-written rules for every case."
+  },
+  {
+    match: /machine learning/i,
+    text: "Machine learning is the branch of AI where a system improves at a task by learning from data instead of being explicitly programmed for every scenario. A model is shown examples, adjusts its internal parameters to reduce error, and gradually generalizes to inputs it hasn't seen before."
+  },
+  {
+    match: /neural network/i,
+    text: "A neural network is a layered structure of simple computational units, loosely inspired by neurons, that pass signals forward and adjust their connection strengths during training. Stacking many layers lets the network build up increasingly abstract representations of its input — this visualization is a simplified, illustrative version of that idea."
+  },
+  {
+    match: /black hole/i,
+    text: "A black hole is a region of spacetime where gravity is so strong that nothing, not even light, can escape once it crosses the event horizon. They typically form when a massive star collapses at the end of its life, compressing enormous mass into an extremely small volume."
+  },
+  {
+    match: /hello|hi\b|hey/i,
+    text: "Hello. I'm NEXUS — a visualization of how a prompt might move through tokenization, layered processing, and response generation. Ask me anything and watch the network react."
+  }
+];
+const DEMO_FALLBACKS = [
+  "That's a good question to route through the network. In demo mode I'm giving a generated illustrative answer rather than a live model response — connect a real AI provider for genuine reasoning.",
+  "Processing that through the simulated layers now. This response is a demo-mode placeholder — wire up an API key to get real answers from a language model.",
+  "Interesting prompt. Since no AI provider is connected, NEXUS is responding with demo content designed to show the pipeline, not a model's actual judgment."
+];
+
+function getDemoResponse(prompt){
+  const hit = DEMO_RESPONSES.find(r => r.match.test(prompt));
+  if (hit) return hit.text;
+  return DEMO_FALLBACKS[Math.floor(Math.random() * DEMO_FALLBACKS.length)];
+}
+
+async function callAI(prompt, { signal } = {}){
+  if (!AI_API_URL) {
+    await wait(650, signal);
+    return { text: getDemoResponse(prompt), demo: true };
+  }
+  try{
+    const res = await fetch(AI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+      signal
+    });
+    if (!res.ok) throw new Error('Bad response: ' + res.status);
+    const data = await res.json();
+    return { text: data.text ?? data.response ?? '', demo: false };
+  }catch(err){
+    if (err.name === 'AbortError') throw err;
+    throw new Error('connection');
+  }
+}
+
+function wait(ms, signal){
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(resolve, ms);
+    if (signal) signal.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted','AbortError')); });
+  });
+}
+
+/* -------------------------------- sound.js -------------------------------- */
+const Sound = (() => {
+  let ctx = null;
+  let enabled = Storage.get(SOUND_KEY, false);
+  function ensure(){ if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); return ctx; }
+  function tone(freq, dur, type='sine', vol=0.05){
+    if (!enabled) return;
+    const c = ensure();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start(); osc.stop(c.currentTime + dur);
+  }
+  return {
+    isEnabled: () => enabled,
+    setEnabled(v){ enabled = v; Storage.set(SOUND_KEY, v); },
+    startup(){ tone(220,0.4,'sine',0.04); setTimeout(()=>tone(440,0.5,'sine',0.04),160); setTimeout(()=>tone(660,0.6,'sine',0.03),320); },
+    node(){ tone(880 + Math.random()*220, 0.08, 'sine', 0.02); },
+    send(){ tone(520,0.12,'triangle',0.05); },
+    response(){ tone(340,0.18,'sine',0.05); setTimeout(()=>tone(500,0.2,'sine',0.04),90); },
+    nav(){ tone(300,0.06,'square',0.02); }
+  };
+})();
+
+/* -------------------------------- particles.js (canvas bg) -------------------------------- */
+const bgCanvas = document.getElementById('bg-canvas');
+const bgCtx = bgCanvas.getContext('2d');
+let bgParticles = [];
+let bgDPR = Math.min(window.devicePixelRatio || 1, 2);
+let bgRunning = true;
+
+function resizeBgCanvas(){
+  bgDPR = Math.min(window.devicePixelRatio || 1, 2);
+  bgCanvas.width = window.innerWidth * bgDPR;
+  bgCanvas.height = window.innerHeight * bgDPR;
+  bgCanvas.style.width = window.innerWidth + 'px';
+  bgCanvas.style.height = window.innerHeight + 'px';
+  bgCtx.setTransform(bgDPR,0,0,bgDPR,0,0);
+}
+function initBgParticles(){
+  const count = Math.min(70, Math.floor((window.innerWidth * window.innerHeight) / 22000));
+  bgParticles = Array.from({length: count}, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 0.6 + Math.random()*1.4,
+    vx: (Math.random()-0.5)*0.12,
+    vy: (Math.random()-0.5)*0.12,
+    a: 0.15 + Math.random()*0.35
+  }));
+}
+let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+window.addEventListener('pointermove', (e)=>{ mouseX = e.clientX; mouseY = e.clientY; }, { passive:true });
+
+function drawBg(){
+  if (!bgRunning) return;
+  bgCtx.clearRect(0,0,window.innerWidth, window.innerHeight);
+  for (const p of bgParticles){
+    p.x += p.vx; p.y += p.vy;
+    const dx = mouseX - p.x, dy = mouseY - p.y;
+    const dist = Math.hypot(dx,dy);
+    if (dist < 140){ p.x -= dx/dist*0.25; p.y -= dy/dist*0.25; }
+    if (p.x < -10) p.x = window.innerWidth+10;
+    if (p.x > window.innerWidth+10) p.x = -10;
+    if (p.y < -10) p.y = window.innerHeight+10;
+    if (p.y > window.innerHeight+10) p.y = -10;
+    bgCtx.beginPath();
+    bgCtx.fillStyle = `rgba(56,189,248,${p.a})`;
+    bgCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    bgCtx.fill();
+  }
+  requestAnimationFrame(drawBg);
+}
+resizeBgCanvas(); initBgParticles(); requestAnimationFrame(drawBg);
+window.addEventListener('resize', debounce(()=>{ resizeBgCanvas(); initBgParticles(); }, 200));
+document.addEventListener('visibilitychange', ()=>{ bgRunning = !document.hidden; if (bgRunning) requestAnimationFrame(drawBg); });
+
+function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+
+/* -------------------------------- neural-network.js -------------------------------- */
+const LAYER_SIZES = [4, 6, 6, 5, 2];
+const LAYER_LABELS = ['INPUT', 'HIDDEN 1', 'HIDDEN 2', 'HIDDEN 3', 'OUTPUT'];
+
+class NeuralNet{
+  constructor(svgEl, { compact=false } = {}){
+    this.svg = svgEl;
+    this.compact = compact;
+    this.ns = 'http://www.w3.org/2000/svg';
+    this.nodes = []; // {x,y,layer,index,el,coreEl}
+    this.links = []; // {a,b,el,path}
+    this.mode = 'normal';
+    this.build();
+  }
+  vb(){
+    const [,,w,h] = this.svg.getAttribute('viewBox').split(' ').map(Number);
+    return {w,h};
+  }
+  build(){
+    this.svg.innerHTML = '';
+    const {w,h} = this.vb();
+    const defs = this._el('defs');
+    defs.innerHTML = `
+      <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="softBlur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3.2"/>
+      </filter>`;
+    this.svg.appendChild(defs);
+
+    this.linkLayer = this._el('g'); this.linkLayer.setAttribute('class','links');
+    this.particleLayer = this._el('g'); this.particleLayer.setAttribute('class','particles');
+    this.nodeLayer = this._el('g'); this.nodeLayer.setAttribute('class','nodes');
+    this.labelLayer = this._el('g'); this.labelLayer.setAttribute('class','labels');
+    this.svg.append(this.linkLayer, this.particleLayer, this.nodeLayer, this.labelLayer);
+
+    const padX = 70, padY = 34;
+    const usableW = w - padX*2;
+    const layerX = LAYER_SIZES.map((_,i)=> padX + (usableW * i)/(LAYER_SIZES.length-1));
+
+    this.nodes = [];
+    LAYER_SIZES.forEach((count, li) => {
+      const usableH = h - padY*2;
+      for (let ni=0; ni<count; ni++){
+        const y = count === 1 ? h/2 : padY + (usableH * ni)/(count-1);
+        this.nodes.push({ layer: li, index: ni, x: layerX[li], y, activation: 0.1 + Math.random()*0.3 });
+      }
+      if (!this.compact){
+        const label = this._el('text', {
+          x: layerX[li], y: h - 8, 'text-anchor':'middle', class:'nn-label'
+        });
+        label.setAttribute('fill', 'rgba(148,163,184,0.55)');
+        label.setAttribute('font-family', 'IBM Plex Mono, monospace');
+        label.setAttribute('font-size', '9');
+        label.setAttribute('letter-spacing', '1.5');
+        label.textContent = LAYER_LABELS[li];
+        this.labelLayer.appendChild(label);
+      }
+    });
+
+    // links between consecutive layers
+    this.links = [];
+    for (let li=0; li<LAYER_SIZES.length-1; li++){
+      const from = this.nodes.filter(n=>n.layer===li);
+      const to = this.nodes.filter(n=>n.layer===li+1);
+      from.forEach(a => {
+        to.forEach(b => {
+          const line = this._el('line', {
+            x1:a.x, y1:a.y, x2:b.x, y2:b.y,
+            class: 'nn-link'
+          });
+          line.setAttribute('stroke', 'rgba(56,189,248,0.14)');
+          line.setAttribute('stroke-width', '1');
+          this.linkLayer.appendChild(line);
+          this.links.push({ a, b, el: line });
+        });
+      });
+    }
+
+    // nodes
+    this.nodes.forEach(n => {
+      const g = this._el('g', { class:'nn-node', tabindex:'0', role:'button' });
+      g.setAttribute('aria-label', `Neural node, layer ${n.layer+1}, unit ${n.index+1}`);
+      const glow = this._el('circle', { cx:n.x, cy:n.y, r:14, fill:'url(#nodeGlow)', class:'glow' });
+      const core = this._el('circle', { cx:n.x, cy:n.y, r: this.compact ? 3.4 : 4.2, class:'core' });
+      core.setAttribute('fill', '#38bdf8');
+      g.append(glow, core);
+      g.addEventListener('pointerenter', (e)=> this.onNodeHover?.(n, e));
+      g.addEventListener('focus', (e)=> this.onNodeHover?.(n, e));
+      g.addEventListener('pointerleave', ()=> this.onNodeLeave?.());
+      g.addEventListener('blur', ()=> this.onNodeLeave?.());
+      g.addEventListener('pointerdown', ()=> this.pulseNode(n));
+      this.nodeLayer.appendChild(g);
+      n.el = g; n.coreEl = core; n.glowEl = glow;
+    });
+
+    this.idleLoop();
+  }
+  _el(tag, attrs={}){
+    const e = document.createElementNS(this.ns, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  idleLoop(){
+    if (this._idleTl) this._idleTl.pause();
+    this._idleTl = animate(this.nodes.map(n=>n.coreEl), {
+      scale: [{to: 1.25},{to: 1}],
+      opacity: [{to: 0.55},{to: 1}],
+      duration: 2400,
+      delay: stagger(60, {from:'random'}),
+      loop: true,
+      ease: 'inOutSine'
+    });
+  }
+  pulseNode(n){
+    animate(n.glowEl, { scale:[{to:1},{to:2.2},{to:1}], opacity:[{to:.9},{to:.9},{to:0}], duration: 650, ease:'outQuad' });
+    animate(n.coreEl, { scale:[{to:1.6},{to:1}], duration: 400, ease:'outQuad' });
+  }
+  setMode(mode){ this.mode = mode; }
+
+  /** Fire a wave of activation across layers, left to right, with particles. */
+  async runPipeline({ onStage, tokenCount = 4 } = {}){
+    const speedMap = { normal: 1, high: 0.55, deep: 1.9, idle: 1, diagnostic: 1 };
+    const speed = speedMap[this.mode] ?? 1;
+
+    // Input layer activation from tokens
+    onStage?.('input');
+    const inputNodes = this.nodes.filter(n=>n.layer===0);
+    animate(inputNodes.map(n=>n.coreEl), {
+      scale: [{to:1.8},{to:1.1}], duration: 500*speed, delay: stagger(70), ease:'outElastic(1,.6)'
+    });
+    this.emitParticles(0, 1, 6, speed);
+    await sleep(420*speed);
+
+    for (let li=1; li<LAYER_SIZES.length; li++){
+      onStage?.(li === LAYER_SIZES.length-1 ? 'output' : 'hidden');
+      const layerNodes = this.nodes.filter(n=>n.layer===li);
+      animate(layerNodes.map(n=>n.coreEl), {
+        scale: [{to:1.7},{to:1}],
+        opacity: [{to:1},{to:1}],
+        duration: 480*speed,
+        delay: stagger(45, {from:'center'}),
+        ease: 'outQuad'
+      });
+      animate(layerNodes.map(n=>n.glowEl), {
+        opacity: [{to:.8},{to:0}],
+        scale: [{to:1.6},{to:1}],
+        duration: 620*speed,
+        delay: stagger(45, {from:'center'})
+      });
+      if (li < LAYER_SIZES.length-1) this.emitParticles(li, li+1, this.mode==='high'?10:6, speed);
+      this.pulseLinks(li-1, speed);
+      await sleep(380*speed);
+    }
+  }
+
+  pulseLinks(fromLayer, speed=1){
+    const links = this.links.filter(l=>l.a.layer===fromLayer);
+    links.forEach(l=>{
+      l.el.setAttribute('stroke', 'rgba(34,211,238,0.55)');
+      l.el.setAttribute('stroke-width','1.4');
+    });
+    animate(links.map(l=>l.el), {
+      strokeOpacity: [{to:1},{to:0.14}],
+      duration: 900*speed,
+      ease: 'outQuad',
+      onComplete: () => links.forEach(l=> l.el.setAttribute('stroke','rgba(56,189,248,0.14)'))
+    });
+  }
+
+  emitParticles(fromLayer, toLayer, count, speed=1){
+    const froms = this.nodes.filter(n=>n.layer===fromLayer);
+    const tos = this.nodes.filter(n=>n.layer===toLayer);
+    for (let i=0;i<count;i++){
+      const a = froms[Math.floor(Math.random()*froms.length)];
+      const b = tos[Math.floor(Math.random()*tos.length)];
+      if (!a || !b) continue;
+      const dot = this._el('circle', { r: 2.4, cx:a.x, cy:a.y, class:'nn-particle' });
+      dot.setAttribute('fill', '#22d3ee');
+      dot.setAttribute('filter','url(#softBlur)');
+      this.particleLayer.appendChild(dot);
+      animate(dot, {
+        cx: [{to:b.x}], cy:[{to:b.y}],
+        opacity: [{to:1},{to:1},{to:0}],
+        duration: (500 + Math.random()*260) * speed,
+        delay: Math.random()*160,
+        ease: 'inOutQuad',
+        onComplete: () => dot.remove()
+      });
+    }
+  }
+  ambientTraffic(rate=1){
+    if (this._ambientTimer) clearInterval(this._ambientTimer);
+    this._ambientTimer = setInterval(()=>{
+      const li = Math.floor(Math.random()*(LAYER_SIZES.length-1));
+      this.emitParticles(li, li+1, 1, 1);
+    }, 900 / rate);
+  }
+}
+function sleep(ms, signal){
+  if (signal) return wait(ms, signal);
+  return new Promise(r=>setTimeout(r, ms));
+}
+
+const netMain = new NeuralNet(document.getElementById('neural-svg'));
+const netChat = new NeuralNet(document.getElementById('neural-svg-chat'), { compact:true });
+[netMain, netChat].forEach(n => n.ambientTraffic(0.6));
+
+/* node tooltip (main view) */
+const tooltip = document.getElementById('node-tooltip');
+netMain.onNodeHover = (n, evt) => {
+  tooltip.innerHTML = `<h4>Neural Node</h4>
+    <div class="row"><span>Layer</span><span>${String(n.layer+1).padStart(2,'0')}</span></div>
+    <div class="row"><span>Activation</span><span>${n.activation.toFixed(3)}</span></div>
+    <div class="row"><span>Connections</span><span>${LAYER_SIZES[n.layer+1] ? LAYER_SIZES[n.layer+1] : (LAYER_SIZES[n.layer-1]||0)}</span></div>
+    <div class="row"><span>State</span><span>${Math.random()>0.3?'ACTIVE':'IDLE'}</span></div>`;
+  const wrap = document.getElementById('network-wrap-main').getBoundingClientRect();
+  const vb = netMain.vb();
+  const px = wrap.left + (n.x / vb.w) * wrap.width;
+  const py = wrap.top + (n.y / vb.h) * wrap.height;
+  tooltip.style.left = Math.min(px + 14, wrap.right - 190) + 'px';
+  tooltip.style.top = Math.max(py - 10, wrap.top + 6) + 'px';
+  tooltip.style.position = 'fixed';
+  animate(tooltip, { opacity:[{to:1}], duration:150 });
+  Sound.node();
+};
+netMain.onNodeLeave = () => animate(tooltip, { opacity:[{to:0}], duration:150 });
+
+/* -------------------------------- activity bars -------------------------------- */
+function buildActivityBars(container, n=42){
+  container.innerHTML = '';
+  for (let i=0;i<n;i++){
+    const bar = document.createElement('i');
+    container.appendChild(bar);
+  }
+  return Array.from(container.children);
+}
+const activityBarsEl = buildActivityBars(document.getElementById('activity-bars-main'));
+let activityLevel = 0.15; // 0..1 idle..busy
+function tickActivity(){
+  activityBarsEl.forEach(bar => {
+    const target = 8 + Math.random()*92*activityLevel + 4;
+    bar.style.height = target + '%';
+    bar.style.opacity = 0.4 + activityLevel*0.6 + Math.random()*0.15;
+  });
+  requestAnimationFrame(()=> setTimeout(tickActivity, 110));
+}
+tickActivity();
+
+/* -------------------------------- telemetry -------------------------------- */
+const tel = {
+  processing: document.getElementById('tel-processing'),
+  processingBar: document.getElementById('tel-processing-bar'),
+  tokens: document.getElementById('tel-tokens'),
+  context: document.getElementById('tel-context'),
+  memory: document.getElementById('tel-memory'),
+  memoryBar: document.getElementById('tel-memory-bar'),
+  latency: document.getElementById('tel-latency'),
+  status: document.getElementById('tel-status'),
+};
+let tokenTotal = 1284;
+function setTelemetry({ processing, context, latency, tokensAdd=0 } = {}){
+  if (processing != null){
+    tel.processing.textContent = processing + '%';
+    animate(tel.processingBar, { width:[{to: processing+'%'}], duration: 400, ease:'outQuad' });
+  }
+  if (context) tel.context.textContent = context;
+  if (latency != null) tel.latency.textContent = latency + 'ms';
+  if (tokensAdd){
+    tokenTotal += tokensAdd;
+    tel.tokens.textContent = tokenTotal.toLocaleString();
+  }
+}
+setInterval(()=>{
+  const mem = 15 + Math.round(Math.random()*20 + activityLevel*40);
+  tel.memory.textContent = Math.min(mem,94) + '%';
+  animate(tel.memoryBar, { width:[{to: Math.min(mem,94)+'%'}], duration: 800, ease:'outQuad' });
+}, 2600);
+
+/* -------------------------------- memory panel -------------------------------- */
+function loadMemory(){ return Storage.get(MEMORY_KEY, [
+  'User is learning JavaScript',
+  'User is building an AI project',
+  'User asked about APIs'
+]); }
+let memoryEntries = loadMemory();
+
+function renderMemory(){
+  const lists = [document.getElementById('memory-list'), document.getElementById('memory-list-full')];
+  lists.forEach(list => {
+    if (!list) return;
+    list.innerHTML = '';
+    memoryEntries.forEach((entry, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${escapeHtml(entry)}</span>`;
+      const btn = document.createElement('button');
+      btn.setAttribute('aria-label', 'Remove memory entry');
+      btn.textContent = '✕';
+      btn.addEventListener('click', () => removeMemory(i));
+      li.appendChild(btn);
+      li.style.opacity = 0; li.style.transform = 'translateY(4px)';
+      list.appendChild(li);
+      requestAnimationFrame(()=> animate(li,{opacity:[{to:1}],translateY:[{to:0}],duration:260,ease:'outQuad'}));
+    });
+  });
+  const dataMemCount = document.getElementById('data-mem-count');
+  if (dataMemCount) dataMemCount.textContent = memoryEntries.length;
+}
+function addMemory(text){
+  if (!text.trim()) return;
+  memoryEntries.push(text.trim());
+  Storage.set(MEMORY_KEY, memoryEntries);
+  renderMemory();
+}
+function removeMemory(i){
+  memoryEntries.splice(i,1);
+  Storage.set(MEMORY_KEY, memoryEntries);
+  renderMemory();
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+document.getElementById('memory-add-btn').addEventListener('click', ()=>{
+  const input = document.getElementById('memory-input');
+  addMemory(input.value); input.value='';
+});
+document.getElementById('memory-input').addEventListener('keydown', e=>{ if (e.key==='Enter'){ addMemory(e.target.value); e.target.value=''; }});
+document.getElementById('memory-add-full').addEventListener('click', ()=>{
+  const input = document.getElementById('memory-input-full');
+  addMemory(input.value); input.value='';
+});
+document.getElementById('memory-input-full').addEventListener('keydown', e=>{ if (e.key==='Enter'){ addMemory(e.target.value); e.target.value=''; }});
+renderMemory();
+
+/* -------------------------------- conversation history -------------------------------- */
+function loadHistory(){ return Storage.get(HISTORY_KEY, [
+  { id: 'h1', title: 'AI Basics', day: 'Today', messages: [] },
+  { id: 'h2', title: 'Space Exploration', day: 'Today', messages: [] },
+  { id: 'h3', title: 'Portfolio Ideas', day: 'Yesterday', messages: [] },
+]); }
+let history = loadHistory();
+let activeConvoId = null;
+
+function renderHistory(){
+  const groups = {};
+  history.forEach(c => { (groups[c.day] ||= []).push(c); });
+  const containers = [document.getElementById('history-list'), document.getElementById('history-full')];
+  containers.forEach(container => {
+    if (!container) return;
+    container.innerHTML = '';
+    Object.entries(groups).forEach(([day, convos]) => {
+      const label = document.createElement('div');
+      label.className = 'history-day'; label.textContent = day;
+      container.appendChild(label);
+      convos.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'history-item';
+        btn.textContent = c.title;
+        btn.addEventListener('click', ()=> loadConversation(c.id));
+        container.appendChild(btn);
+      });
+    });
+  });
+  const convCount = document.getElementById('data-conv-count');
+  if (convCount) convCount.textContent = history.length;
+}
+function loadConversation(id){
+  const c = history.find(h=>h.id===id);
+  if (!c) return;
+  activeConvoId = id;
+  const scroll = document.getElementById('chat-scroll');
+  animate(scroll, { opacity:[{to:0}], duration: 160, ease:'inQuad', onComplete: () => {
+    scroll.innerHTML = '';
+    (c.messages||[]).forEach(m => appendMessage(m.role, m.text, { animate:false }));
+    setView('chat');
+    animate(scroll, { opacity:[{to:1}], duration: 220, ease:'outQuad' });
+  }});
+  Sound.nav();
+}
+document.getElementById('new-convo').addEventListener('click', ()=>{
+  activeConvoId = 'h' + Date.now();
+  history.unshift({ id: activeConvoId, title: 'New Conversation', day: 'Today', messages: [] });
+  Storage.set(HISTORY_KEY, history);
+  renderHistory();
+  document.getElementById('chat-scroll').innerHTML = '';
+  setView('chat');
+});
+function persistToConvo(role, text){
+  if (!activeConvoId){
+    activeConvoId = 'h' + Date.now();
+    history.unshift({ id: activeConvoId, title: text.slice(0,28) || 'Conversation', day: 'Today', messages: [] });
+  }
+  const c = history.find(h=>h.id===activeConvoId);
+  if (c){
+    c.messages.push({ role, text });
+    Storage.set(HISTORY_KEY, history);
+    renderHistory();
+  }
+}
+renderHistory();
+
+/* -------------------------------- chat.js -------------------------------- */
+const chatScroll = document.getElementById('chat-scroll');
+const tokenTrack = document.getElementById('token-track');
+const promptInput = document.getElementById('prompt-input');
+const sendBtn = document.getElementById('send-btn');
+const stopBtn = document.getElementById('stop-btn');
+
+let currentController = null;
+let isGenerating = false;
+
+function appendMessage(role, text, { animate:doAnim = true } = {}){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + (role==='user' ? 'user' : 'ai');
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  meta.textContent = role === 'user' ? 'USER' : 'NEXUS';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.textContent = text;
+  wrap.append(meta, bubble);
+
+  if (role === 'ai'){
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+    actions.innerHTML = `
+      <button class="chip-btn" data-act="copy">Copy</button>
+      <button class="chip-btn" data-act="regen">Regenerate</button>`;
+    actions.querySelector('[data-act="copy"]').addEventListener('click', ()=>{
+      navigator.clipboard?.writeText(text);
+      toast('Response copied.');
+    });
+    actions.querySelector('[data-act="regen"]').addEventListener('click', ()=> regenerate(text));
+    wrap.appendChild(actions);
+  }
+
+  chatScroll.appendChild(wrap);
+  chatScroll.scrollTop = chatScroll.scrollHeight;
+
+  if (doAnim){
+    wrap.style.transform = role==='user' ? 'translateY(14px)' : 'translateY(10px)';
+    requestAnimationFrame(()=> animate(wrap, { opacity:[{to:1}], translateY:[{to:0}], duration: 380, ease:'outQuad' }));
+  } else {
+    wrap.style.opacity = 1;
+  }
+  return { wrap, bubble };
+}
+
+let lastUserPrompt = '';
+function regenerate(){
+  if (!lastUserPrompt || isGenerating) return;
+  runPrompt(lastUserPrompt, { skipEcho:true });
+}
+
+function tokenize(text){
+  return text.trim().split(/\s+/).filter(Boolean);
+}
+
+async function showTokens(tokens){
+  tokenTrack.innerHTML = '';
+  const chips = tokens.map(t => {
+    const chip = document.createElement('span');
+    chip.className = 'token-chip';
+    chip.textContent = t;
+    tokenTrack.appendChild(chip);
+    return chip;
+  });
+  chips.forEach(c => { c.style.opacity = 0; c.style.transform = 'translateY(6px) scale(0.9)'; });
+  animate(chips, {
+    opacity:[{to:1}], translateY:[{to:0}], scale:[{to:1}],
+    duration: 420, delay: stagger(70), ease: 'outBack(1.6)'
+  });
+  await sleep(tokens.length * 70 + 300);
+  animate(chips, { opacity:[{to:0}], duration: 300, delay: stagger(30) });
+}
+
+function setStageStatus(text, sub=''){
+  document.getElementById('chat-stage-title').textContent = 'Neural Network · ' + text;
+  document.getElementById('chat-substatus').textContent = sub;
+  document.getElementById('neural-stage-title').textContent = 'Neural Network · ' + text;
+  document.getElementById('neural-substatus').textContent = sub;
+}
+
+async function runPrompt(prompt, { skipEcho=false } = {}){
+  if (isGenerating) return;
+  isGenerating = true;
+  lastUserPrompt = prompt;
+  sendBtn.disabled = true;
+  stopBtn.classList.add('active');
+  activityLevel = 0.85;
+  document.getElementById('status-dot').classList.remove('warn');
+  document.getElementById('status-text').textContent = 'Neural Core · Processing';
+
+  if (!skipEcho){
+    appendMessage('user', prompt);
+    persistToConvo('user', prompt);
+  }
+  Sound.send();
+
+  currentController = new AbortController();
+  const { signal } = currentController;
+
+  try{
+    setStageStatus('Analyzing Input');
+    setTelemetry({ processing: 12, context: 'Reading', latency: null });
+    await sleep(350, signal);
+
+    const tokens = tokenize(prompt);
+    setStageStatus('Tokenizing');
+    setTelemetry({ processing: 24 });
+    const tokenPromise = showTokens(tokens);
+    const pipelinePromise = netChat.runPipeline({
+      tokenCount: tokens.length,
+      onStage: (stage) => {
+        if (stage === 'input') setStageStatus('Processing Neural Pathways', 'input layer active');
+        if (stage === 'hidden') setStageStatus('Analyzing Context', 'hidden layers active');
+        if (stage === 'output') setStageStatus('Generating Response', 'output layer active');
+      }
+    });
+    netMain.runPipeline({ tokenCount: tokens.length });
+    setTelemetry({ processing: 46, context: 'Active', tokensAdd: tokens.length });
+
+    await Promise.all([tokenPromise, pipelinePromise, sleep(600, signal)]);
+
+    setStageStatus('Generating Response');
+    setTelemetry({ processing: 78 });
+    const t0 = performance.now();
+    const result = await callAI(prompt, { signal });
+    const latency = Math.round(performance.now() - t0) + 120;
+
+    setStageStatus('Response Ready');
+    setTelemetry({ processing: 100, context: 'Complete', latency, tokensAdd: Math.ceil(result.text.length/4) });
+
+    const { bubble } = appendMessage('ai', '', { animate:true });
+    bubble.classList.add('cursor-blink');
+    await typeText(bubble, result.text);
+    bubble.classList.remove('cursor-blink');
+    persistToConvo('ai', result.text);
+    Sound.response();
+
+    setTimeout(()=> setStageStatus('Idle'), 900);
+    setTimeout(()=> setTelemetry({ processing: 4, context: 'Idle' }), 1200);
+
+  }catch(err){
+    if (err.name === 'AbortError'){
+      appendMessage('ai', '[ Generation stopped ]');
+      setStageStatus('Idle');
+    } else {
+      showConnectionError();
+      setStageStatus('Idle');
+    }
+  }finally{
+    isGenerating = false;
+    activityLevel = 0.15;
+    sendBtn.disabled = false;
+    stopBtn.classList.remove('active');
+    document.getElementById('status-text').textContent = 'Neural Core · Online';
+  }
+}
+
+async function typeText(el, text){
+  const words = text.split(' ');
+  el.textContent = '';
+  for (let i=0;i<words.length;i++){
+    el.textContent += (i? ' ':'') + words[i];
+    chatScroll.scrollTop = chatScroll.scrollHeight;
+    await sleep(28 + Math.random()*35);
+  }
+}
+sendBtn.addEventListener('click', submitPrompt);
+promptInput.addEventListener('keydown', e => { if (e.key==='Enter') submitPrompt(); });
+stopBtn.addEventListener('click', ()=> currentController?.abort());
+
+function submitPrompt(){
+  const val = promptInput.value.trim();
+  if (!val || isGenerating) return;
+  promptInput.value = '';
+  setView('chat');
+  runPrompt(val);
+}
+
+function toast(msg){
+  const region = document.getElementById('toast-region');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  el.style.opacity = 0;
+  el.style.transform = 'translateX(12px)';
+  region.appendChild(el);
+  requestAnimationFrame(()=> animate(el, {opacity:[{to:1}], translateX:[{to:0}], duration:240}));
+  setTimeout(()=> animate(el, { opacity:[{to:0}], duration:220, onComplete: ()=> el.remove() }), 2600);
+}
+
+function showConnectionError(){
+  document.getElementById('error-panel').classList.add('active');
+  document.getElementById('status-dot').classList.add('warn');
+}
+document.getElementById('error-retry').addEventListener('click', ()=>{
+  document.getElementById('error-panel').classList.remove('active');
+  if (lastUserPrompt) runPrompt(lastUserPrompt, { skipEcho:true });
+});
+document.getElementById('error-demo').addEventListener('click', ()=>{
+  document.getElementById('error-panel').classList.remove('active');
+  toast('Demo mode active — using simulated responses.');
+});
+
+/* -------------------------------- ui.js: view routing -------------------------------- */
+const navItems = document.querySelectorAll('.nav-item[data-view]');
+function setView(view){
+  document.querySelectorAll('[data-view-panel]').forEach(el => {
+    el.classList.toggle('active', el.dataset.viewPanel === view);
+  });
+  document.getElementById('view-chat').classList.toggle('active', view === 'chat');
+  navItems.forEach(item => {
+    const active = item.dataset.view === view;
+    item.toggleAttribute('aria-current', active);
+    if (active) item.setAttribute('aria-current','page'); else item.removeAttribute('aria-current');
+  });
+  Sound.nav();
+}
+navItems.forEach(item => item.addEventListener('click', ()=> setView(item.dataset.view)));
+
+const telemetryToggle = document.getElementById('telemetry-toggle');
+const telemetryPanel = document.getElementById('telemetry');
+function updateTelemetryToggleVisibility(){
+  const show = window.innerWidth <= 880;
+  telemetryToggle.style.display = show ? 'flex' : 'none';
+  if (!show) telemetryPanel.classList.remove('open');
+}
+telemetryToggle.addEventListener('click', ()=>{
+  const open = telemetryPanel.classList.toggle('open');
+  telemetryToggle.setAttribute('aria-pressed', open);
+});
+window.addEventListener('resize', debounce(updateTelemetryToggleVisibility, 150));
+updateTelemetryToggleVisibility();
+
+/* -------------------------------- network modes -------------------------------- */
+const diagnosticReadout = document.getElementById('diagnostic-readout');
+document.getElementById('mode-select').addEventListener('change', (e) => {
+  const mode = e.target.value;
+  [netMain, netChat].forEach(n => n.setMode(mode));
+  document.body.dataset.mode = mode;
+  const rateMap = { normal:0.6, high:2.4, deep:0.25, idle:0.12, diagnostic:0.6 };
+  [netMain, netChat].forEach(n => n.ambientTraffic(rateMap[mode] ?? 0.6));
+  activityLevel = { normal:0.2, high:0.75, deep:0.35, idle:0.05, diagnostic:0.3 }[mode] ?? 0.2;
+
+  if (mode === 'diagnostic'){
+    animate(diagnosticReadout, { opacity:[{to:1}], duration:200 });
+    updateDiagnostic();
+    if (window._diagInterval) clearInterval(window._diagInterval);
+    window._diagInterval = setInterval(updateDiagnostic, 1200);
+  } else {
+    animate(diagnosticReadout, { opacity:[{to:0}], duration:200 });
+    clearInterval(window._diagInterval);
+  }
+  toast('Network mode: ' + mode.toUpperCase());
+});
+function updateDiagnostic(){
+  diagnosticReadout.innerHTML = `
+    LAYERS: ${LAYER_SIZES.length}<br>
+    UNITS: ${LAYER_SIZES.reduce((a,b)=>a+b,0)}<br>
+    LINKS: ${netMain.links.length}<br>
+    MODE: ${netMain.mode.toUpperCase()}<br>
+    FRAME: ${(performance.now()/1000).toFixed(1)}s`;
+}
+
+/* -------------------------------- sound toggle -------------------------------- */
+const soundToggle = document.getElementById('sound-toggle');
+function syncSoundUI(){
+  soundToggle.setAttribute('aria-pressed', Sound.isEnabled());
+}
+syncSoundUI();
+soundToggle.addEventListener('click', () => {
+  Sound.setEnabled(!Sound.isEnabled());
+  syncSoundUI();
+  if (Sound.isEnabled()) Sound.node();
+});
+
+/* -------------------------------- data view actions -------------------------------- */
+document.getElementById('export-data')?.addEventListener('click', ()=>{
+  const payload = { memory: memoryEntries, history };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'nexus-session.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById('clear-data')?.addEventListener('click', ()=>{
+  if (!confirm('Clear all local memory and conversation history?')) return;
+  memoryEntries = []; history = [];
+  Storage.set(MEMORY_KEY, memoryEntries); Storage.set(HISTORY_KEY, history);
+  renderMemory(); renderHistory();
+  chatScroll.innerHTML = '';
+  toast('Local session data cleared.');
+});
+
+/* -------------------------------- dashboard counters -------------------------------- */
+function animateCounters(){
+  document.querySelectorAll('[data-counter]').forEach(el => {
+    const target = Number(el.dataset.counter);
+    const obj = { val: 0 };
+    animate(obj, {
+      val: [{to: target}], duration: 1400, ease: 'outCubic',
+      onUpdate: () => { el.textContent = Math.round(obj.val).toLocaleString(); }
+    });
+  });
+  document.querySelectorAll('[data-counter-decimal]').forEach(el => {
+    const target = Number(el.dataset.counterDecimal);
+    const obj = { val: 0 };
+    animate(obj, {
+      val: [{to: target}], duration: 1400, ease: 'outCubic',
+      onUpdate: () => { el.textContent = obj.val.toFixed(2); }
+    });
+  });
+}
+
+/* -------------------------------- boot sequence -------------------------------- */
+function runBoot(){
+  const bootEl = document.getElementById('boot');
+  const bootCanvas = document.getElementById('boot-canvas');
+  const bctx = bootCanvas.getContext('2d');
+  function resizeBoot(){
+    bootCanvas.width = bootEl.clientWidth * bgDPR;
+    bootCanvas.height = bootEl.clientHeight * bgDPR;
+    bootCanvas.style.width = bootEl.clientWidth+'px';
+    bootCanvas.style.height = bootEl.clientHeight+'px';
+    bctx.setTransform(bgDPR,0,0,bgDPR,0,0);
+  }
+  resizeBoot();
+  const dust = Array.from({length: 90}, ()=>({
+    x: Math.random()*bootEl.clientWidth, y: Math.random()*bootEl.clientHeight,
+    r: Math.random()*1.4+0.3, a: Math.random()*0.6
+  }));
+  let bootRunning = true;
+  function drawDust(){
+    if (!bootRunning) return;
+    bctx.clearRect(0,0,bootEl.clientWidth, bootEl.clientHeight);
+    dust.forEach(p=>{
+      bctx.beginPath();
+      bctx.fillStyle = `rgba(56,189,248,${p.a})`;
+      bctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      bctx.fill();
+    });
+    requestAnimationFrame(drawDust);
+  }
+  drawDust();
+
+  const tl = createTimeline({ defaults: { ease: 'outQuad' } });
+  tl.add('#boot-logo', { opacity:[{to:1}], translateY:[{to:0}], duration: 700 })
+    .add('#boot-tagline', { opacity:[{to:1}], duration: 500 }, '-=300')
+    .add('.boot-log [data-line]', { opacity:[{to:1}], translateX:[{to:0}] , duration: 300, delay: stagger(220) }, '-=100')
+    .add('#boot-status', { opacity:[{to:1}], duration: 400 }, '+=200');
+
+  document.querySelectorAll('.boot-log [data-line]').forEach(l => l.style.transform='translateX(-6px)');
+
+  const finish = () => {
+    if (bootEl.dataset.done) return;
+    bootEl.dataset.done = '1';
+    bootRunning = false;
+    Sound.startup();
+    animate(bootEl, {
+      opacity:[{to:0}], duration: 600, ease:'inOutQuad',
+      onComplete: () => {
+        bootEl.style.display = 'none';
+        showApp();
+      }
+    });
+  };
+  setTimeout(finish, 3400);
+  document.getElementById('skip-boot').addEventListener('click', finish);
+}
+
+function showApp(){
+  const app = document.getElementById('app');
+  app.style.display = 'grid';
+  animate(app, { opacity:[{to:1}], duration: 600, ease:'outQuad' });
+  animate('.nav-item', { opacity:[{to:1}], translateX:[{to:0}], duration: 380, delay: stagger(60) });
+  document.querySelectorAll('.nav-item').forEach(n=> n.style.opacity=0);
+  requestAnimationFrame(()=> animate('.nav-item', {opacity:[{to:1}], translateX:[{to:0}], duration:380, delay:stagger(60)}));
+  animateCounters();
+  promptInput.focus();
+}
+
+/* prime hero pipeline once, subtly, so the network doesn't look static on load */
+setTimeout(()=>{ if (document.getElementById('view-chat').classList.contains('active')) netChat.ambientTraffic(0.6); }, 4200);
+
+runBoot();
+
+/* reduced motion */
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.body.classList.add('reduced-motion');
+}
+</script>
+</body>
+</html>
