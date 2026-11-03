@@ -1187,3 +1187,10 @@ html .panel[data-style=solar]{--pvbg:#04050d;--ln:rgba(145,149,196,.3);--ink:#f4
 .cert-list .cert-row{grid-template-columns:72px 1fr auto;grid-template-areas:"thumb type date" "thumb body body";column-gap:14px;row-gap:4px;}
 @media(min-width:761px){.cert-list .cert-row{grid-template-columns:72px 1fr auto;grid-template-areas:"thumb type date" "thumb body body";gap:4px 14px;padding:12px 4px;}}
 .cert-list .cert-row:not(:has(.cert-th)){grid-template-columns:1fr auto;grid-template-areas:"type date" "body body";}
+/* certificate pictures: larger, whole picture visible */
+.cert-list{--cert-w:168px;--cert-h:120px;}
+.cert-th{width:var(--cert-w);height:var(--cert-h);object-fit:contain;object-position:center;background:var(--surface);padding:3px;}
+.cert-list .cert-row{grid-template-columns:var(--cert-w) 1fr auto;grid-template-areas:"thumb type date" "thumb body body";align-content:center;column-gap:16px;padding:14px 4px;}
+@media(min-width:761px){.cert-list .cert-row{grid-template-columns:var(--cert-w) 1fr auto;grid-template-areas:"thumb type date" "thumb body body";gap:6px 16px;padding:14px 4px;}}
+@media(max-width:760px){.cert-list{--cert-w:132px;--cert-h:96px;}}
+.cert-list .cert-row:not(:has(.cert-th)){grid-template-columns:1fr auto;grid-template-areas:"type date" "body body";}

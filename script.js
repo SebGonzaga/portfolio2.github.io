@@ -354,7 +354,7 @@ addEventListener('load', () => ScrollTrigger.refresh());
   list.innerHTML = PAGES.map((p, i) => `<button type="button" role="tab" data-i="${i}" aria-selected="false"><b>${pad(i + 1)}</b><span>${p[0]}</span></button>`).join('');
   function show(i) {
     i = (i + PAGES.length) % PAGES.length; if (i === cur) return; cur = i;
-    const [name, file, desc, tags] = PAGES[i], url = `./rain/${file}.html`;
+    const [name, file, desc, tags] = PAGES[i], url = `./rain/${file}.html?v=20261103`;
     $$('button', list).forEach((b, k) => { const on = k === i; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
     $('#rainName').textContent = name; $('#rainDesc').textContent = desc;
     $('#rainCount').textContent = `${pad(i + 1)} / ${pad(PAGES.length)}`;
@@ -375,6 +375,6 @@ addEventListener('load', () => ScrollTrigger.refresh());
   const nb = $('#nowBuilding'), sec = $('#rain');
   if (nb && sec && 'IntersectionObserver' in window) new IntersectionObserver(([en]) => nb.classList.toggle('away', en.isIntersecting), { threshold: 0.05 }).observe(sec);
   /* only load the live page once the section is near the screen */
-  const load = () => { if (seen) return; seen = true; frame.src = `./rain/${PAGES[cur][1]}.html`; };
+  const load = () => { if (seen) return; seen = true; frame.src = `./rain/${PAGES[cur][1]}.html?v=20261103`; };
   if ('IntersectionObserver' in window) { const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { load(); io.disconnect(); } }, { rootMargin: '300px' }); io.observe(root); } else load();
 })();
