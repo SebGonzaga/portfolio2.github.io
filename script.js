@@ -299,6 +299,7 @@ revealIn($$('#labGrid .lab-card'));
 (function () {
   const wrap = $('.contact-wrap'); if (!wrap) return;
   const tiny = $('.contact-tiny'), full = tiny.textContent;
+  tiny.dataset.full = full;
   if (!reduce) {
     tiny.textContent = '';
     const pops = $$('.contact-actions .btn, .copy-mail, .social-icon');

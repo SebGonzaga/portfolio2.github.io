@@ -1194,3 +1194,66 @@ html .panel[data-style=solar]{--pvbg:#04050d;--ln:rgba(145,149,196,.3);--ink:#f4
 @media(min-width:761px){.cert-list .cert-row{grid-template-columns:var(--cert-w) 1fr auto;grid-template-areas:"thumb type date" "thumb body body";gap:6px 16px;padding:14px 4px;}}
 @media(max-width:760px){.cert-list{--cert-w:132px;--cert-h:96px;}}
 .cert-list .cert-row:not(:has(.cert-th)){grid-template-columns:1fr auto;grid-template-areas:"type date" "body body";}
+
+/* ===== Animated project thumbnails ===== */
+.pv-tag,.pv-n{z-index:2;}
+.pv::after{z-index:3;}
+@media (prefers-reduced-motion:no-preference){
+  /* every thumbnail: a soft light sweep, staggered so they don't flash together */
+  .pv::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(105deg,transparent 38%,color-mix(in srgb,var(--ink,#fff) 26%,transparent) 50%,transparent 62%);
+    transform:translateX(-130%);animation:pvsweep 7s ease-in-out infinite;}
+  .pcard:nth-child(3n+2) .pv::before{animation-delay:1.6s;}
+  .pcard:nth-child(3n) .pv::before{animation-delay:3.2s;}
+  .panel:hover .pv::before{animation-duration:2.4s;}
+
+  /* Auré: gold light glides across the lettering, halo breathes */
+  [data-style=aure] .pv-art b{background:linear-gradient(100deg,#333 38%,#c5a059 50%,#333 62%) 0 0/260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:pvshine 4.2s linear infinite;}
+  [data-style=aure] .pv-art::before{content:"";position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle,rgba(197,160,89,.35),transparent 65%);animation:pvpulse 4.4s ease-in-out infinite alternate;}
+
+  /* Lihim + KRĀV: slow cinematic zoom on the photo */
+  [data-style=lihim] .pv-art::before,[data-style=krav] .pv-art::before{content:"";position:absolute;inset:0;background:inherit;animation:pvkb 14s ease-in-out infinite alternate;}
+
+  /* Inkwell: ruled paper scrolls, a yellow highlighter swipes under the title */
+  [data-style=ink] .pv-art{animation:pvpaper 6s linear infinite;}
+  [data-style=ink] .pv-art::after{content:"";position:absolute;left:30%;right:30%;top:58%;height:9px;border-radius:2px;background:rgba(255,206,40,.5);transform-origin:left center;animation:pvhl 4.6s ease-in-out infinite;}
+
+  /* Pick & Race: speed lines rush past, the label bobs along */
+  [data-style=race] .pv-art::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(30,42,69,.28) 0 16px,transparent 16px 52px) 0 30%/100% 2px no-repeat,repeating-linear-gradient(90deg,rgba(30,42,69,.22) 0 28px,transparent 28px 70px) 0 52%/100% 2px no-repeat,repeating-linear-gradient(90deg,rgba(30,42,69,.28) 0 12px,transparent 12px 44px) 0 74%/100% 2px no-repeat;animation:pvspeed .9s linear infinite;}
+  [data-style=race] .pv-art b{animation:pvbob 1.6s ease-in-out infinite;}
+
+  /* NEXUS AI: grid drifts, a pulse ring expands, a signal travels the network */
+  [data-style=nexus] .pv-art{animation:pvdrift 5s linear infinite;}
+  [data-style=nexus] .pv-art::before{content:"";position:absolute;inset:26%;border-radius:50%;border:1px solid rgba(125,211,252,.55);animation:pvring 3.2s ease-out infinite;}
+  [data-style=nexus] .pv-art::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:#7dd3fc;box-shadow:0 0 12px 3px rgba(56,189,248,.9);animation:pvsignal 3.6s ease-in-out infinite;}
+
+  /* Minecraft Explorer: the voxel floor scrolls diagonally */
+  [data-style=block] .pv-art{animation:pvblocks 4s linear infinite;}
+  [data-style=block] .pv-art b{animation:pvbob 2.2s steps(4) infinite;}
+
+  /* Pokédex: the Poké Ball tilts and hops */
+  [data-style=poke] .pv-art{animation:pvwobble 2.8s ease-in-out infinite;}
+
+  /* SolarCircuit: two planets orbit the sun along the rings */
+  [data-style=solar] .pv-art::before,[data-style=solar] .pv-art::after{content:"";position:absolute;left:50%;top:50%;border-radius:50%;}
+  [data-style=solar] .pv-art::before{width:139px;height:139px;margin:-69.5px 0 0 -69.5px;background:radial-gradient(circle at 50% 0,#8ec5ff 0 4.5px,transparent 5.5px);animation:pvorbit 7s linear infinite;}
+  [data-style=solar] .pv-art::after{width:209px;height:209px;margin:-104.5px 0 0 -104.5px;background:radial-gradient(circle at 50% 0,#ff9e7a 0 3.5px,transparent 4.5px);animation:pvorbit 13s linear infinite reverse;}
+
+  /* Coursework: the dot grid drifts */
+  [data-style=concept] .pv-art{animation:pvdots 6s linear infinite;}
+}
+@keyframes pvsweep{0%,52%{transform:translateX(-130%);}78%,100%{transform:translateX(130%);}}
+@keyframes pvshine{to{background-position:-260% 0;}}
+@keyframes pvpulse{from{transform:scale(.82);opacity:.55;}to{transform:scale(1.18);opacity:1;}}
+@keyframes pvkb{from{transform:scale(1) translate(0,0);}to{transform:scale(1.16) translate(-2.5%,-2%);}}
+@keyframes pvpaper{to{background-position:0 52px;}}
+@keyframes pvhl{0%,12%{transform:scaleX(0);}45%,78%{transform:scaleX(1);}100%{transform:scaleX(1);opacity:0;}}
+@keyframes pvspeed{to{background-position:-70px 30%,-98px 52%,-56px 74%;}}
+@keyframes pvbob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+@keyframes pvdrift{to{background-position:34px 34px,0 0,0 0;}}
+@keyframes pvring{0%{transform:scale(.35);opacity:.9;}100%{transform:scale(1.5);opacity:0;}}
+@keyframes pvsignal{0%{transform:translate(-125px,-32px);opacity:0;}15%{opacity:1;}50%{transform:translate(0,22px);}85%{opacity:1;}100%{transform:translate(125px,-28px);opacity:0;}}
+@keyframes pvblocks{to{background-position:36px 36px,0 0;}}
+@keyframes pvwobble{0%,100%{rotate:-12deg;translate:0 0;}25%{rotate:10deg;translate:0 -6px;}50%{rotate:-6deg;translate:0 0;}75%{rotate:14deg;translate:0 -4px;}}
+@keyframes pvorbit{to{transform:rotate(360deg);}}
+@keyframes pvdots{to{background-position:16px 16px;}}
