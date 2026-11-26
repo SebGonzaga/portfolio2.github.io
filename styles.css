@@ -1257,3 +1257,15 @@ html .panel[data-style=solar]{--pvbg:#04050d;--ln:rgba(145,149,196,.3);--ink:#f4
 @keyframes pvwobble{0%,100%{rotate:-12deg;translate:0 0;}25%{rotate:10deg;translate:0 -6px;}50%{rotate:-6deg;translate:0 0;}75%{rotate:14deg;translate:0 -4px;}}
 @keyframes pvorbit{to{transform:rotate(360deg);}}
 @keyframes pvdots{to{background-position:16px 16px;}}
+
+/* Videos */
+.vid-grid{display:grid;grid-template-columns:1fr;gap:22px;}
+@media(min-width:900px){.vid-grid{grid-template-columns:repeat(3,1fr);}}
+.vid-card{border:1px solid var(--border);border-radius:18px;background:var(--surface);overflow:hidden;display:flex;flex-direction:column;transition:border-color .3s,transform .3s var(--ease);}
+.vid-card:hover{border-color:var(--border-strong);transform:translateY(-3px);}
+.vid-wrap{aspect-ratio:16/9;background:#0b0d12;border-bottom:1px solid var(--border);}
+.vid-wrap video{display:block;width:100%;height:100%;object-fit:contain;background:#0b0d12;}
+.vid-info{padding:22px 24px 26px;display:flex;flex-direction:column;gap:8px;}
+.vid-info h3{font-family:var(--font-serif);font-size:22px;font-weight:600;}
+.vid-info p:not(.lab-code){color:var(--text-2);font-size:14.5px;}
+@media(max-width:899px){.vid-grid{gap:16px;}}
