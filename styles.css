@@ -199,7 +199,7 @@ ul{list-style:none;}
 .mobile-menu.open{transform:translateY(0);}
 .mobile-menu a{font-family:var(--font-display);font-size:26px;color:var(--text-1);}
 
-@media(max-width:860px){
+@media(max-width:1100px){
   .nav-links{display:none;}
   .nav-cta{display:none;}
   .hamburger{display:flex;}
@@ -281,7 +281,7 @@ ul{list-style:none;}
   border-bottom:1px solid var(--border);
   background:rgba(70,60,50,0.035);
 }
-.hero-panel-bar span{width:9px;height:9px;border-radius:50%;background:#d6d0c6;}
+.hero-panel-bar span:not(.hero-panel-title){width:9px;height:9px;flex:0 0 auto;border-radius:50%;background:#d6d0c6;}
 .hero-panel-title{
   margin-left:8px;font-family:var(--font-mono);font-size:11.5px;color:var(--text-3);
 }
@@ -997,7 +997,7 @@ a.pv:hover::after{opacity:1;transform:translate(calc(var(--px,0)*14px),calc(var(
 .section-title{line-height:1.15;}
 .timeline{margin-left:0;margin-right:0;}
 .nav-cta{white-space:nowrap;}
-@media(min-width:861px){.nav-links{gap:clamp(12px,1.7vw,30px);}.nav-links a{font-size:12.5px;}}
+@media(min-width:1101px){.nav-links{gap:clamp(12px,1.7vw,30px);}.nav-links a{font-size:12.5px;}}
 
 
 /* =====================================================================
@@ -1097,7 +1097,7 @@ html .panel[data-style=solar]{--pvbg:#04050d;--ln:rgba(145,149,196,.3);--ink:#f4
 .logo,.nav-links a,.nav-cta{white-space:nowrap;}
 .nav-links{gap:28px;}
 @media(min-width:981px){.navbar.scrolled .nav-inner{max-width:min(1140px,94vw);}}
-@media(min-width:861px) and (max-width:1180px){.nav-links{gap:16px;}.nav-links a{font-size:12px;}.nav-cta{padding:8px 14px;}}
+@media(min-width:1101px) and (max-width:1240px){.nav-links{gap:14px;}.nav-links a{font-size:12px;}.nav-cta{padding:8px 14px;}}
 /* education extras + moments gallery */
 .edu-prev{list-style:none;max-width:860px;margin:18px 0 36px;padding:0;display:grid;gap:12px;}
 .edu-prev li{display:flex;flex-direction:column;gap:3px;border-left:2px solid var(--border-strong);padding-left:16px;}
@@ -1269,3 +1269,38 @@ html .panel[data-style=solar]{--pvbg:#04050d;--ln:rgba(145,149,196,.3);--ink:#f4
 .vid-info h3{font-family:var(--font-serif);font-size:22px;font-weight:600;}
 .vid-info p:not(.lab-code){color:var(--text-2);font-size:14.5px;}
 @media(max-width:899px){.vid-grid{gap:16px;}}
+
+/* Responsive fixes */
+.copy-mail{max-width:100%;}
+.copy-mail span{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+.copy-mail em{flex:0 0 auto;}
+@media(max-width:400px){.copy-mail{font-size:12px;gap:8px;padding:9px 10px 9px 14px;}}
+
+/* Hero: keep the scroll hint clear of the content */
+.hero{padding-bottom:120px;}
+@media(max-width:980px),(max-height:720px){.scroll-indicator{display:none;}.hero{padding-bottom:60px;}}
+
+/* Touch targets */
+.hamburger{min-width:44px;min-height:44px;align-items:center;justify-content:center;}
+@media(max-width:1100px){.logo{padding:10px 0;}}
+@media(pointer:coarse),(max-width:760px){
+  .chip{min-height:40px;padding-top:9px;padding-bottom:9px;}
+  .pv-tag{font-size:11px;}
+}
+/* Videos: don't stretch too wide on tablets */
+@media(min-width:600px) and (max-width:899px){.vid-grid{max-width:640px;margin-inline:auto;}}
+
+/* Navbar (collapsed): keep theme toggle next to the hamburger */
+@media(max-width:1100px){.theme-toggle{margin-left:auto;}.nav-inner{gap:10px;}}
+
+/* Mobile menu: scroll when taller than the screen (small / landscape phones) */
+.mobile-menu{
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  justify-content:safe center;
+  gap:clamp(8px,2.2vh,22px);
+  padding:76px 24px 24px;
+}
+.mobile-menu a{font-size:clamp(20px,4vh,26px);line-height:1.3;padding:3px 12px;}
+
+/* Keep the navbar (logo, theme toggle, close button) above the open mobile menu */
+.navbar{z-index:930;}
